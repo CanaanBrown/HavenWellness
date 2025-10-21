@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Haven Wellness</title>
+  <style>
+    body { margin: 0; display: flex; font-family: system-ui, sans-serif; }
+    #sidebar a { color: #c9d3ff; text-decoration: none; }
+    #sidebar a:hover { color: #fff; }
+    main { margin-left: 240px; padding: 24px; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="sidebar"></div>
+  <main>
+    <h1>Dashboard</h1>
+    <div id="contentArea">
+      <p>Welcome to Haven Wellness! This is your dashboard where you can access all features.</p>
+      
+      <div class="row" style="margin-top:16px; display: flex; gap: 16px; flex-wrap: wrap;">
+        <div class="card" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex: 1; min-width: 260px;">
+          <h3>Seed Info</h3>
+          <button id="btnSeed">Load Seed Counts</button>
+          <pre id="seedOut" style="background:#0b1020; color:#e2e8f0; padding:12px; border-radius:8px; overflow:auto;">Click "Load Seed Counts"</pre>
+        </div>
+        <div class="card" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex: 1; min-width: 260px;">
+          <h3>Users</h3>
+          <button id="btnUsers">Load Users</button>
+          <pre id="usersOut" style="background:#0b1020; color:#e2e8f0; padding:12px; border-radius:8px; overflow:auto;">Click "Load Users"</pre>
+        </div>
+        <div class="card" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex: 1; min-width: 260px;">
+          <h3>Create User</h3>
+          <form id="formUser" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+            <input type="text" id="name" placeholder="Name" required style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px;" />
+            <input type="email" id="email" placeholder="Email" required style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px;" />
+            <input type="password" id="password" placeholder="Password" required style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px;" />
+            <button type="submit" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;">Add User</button>
+          </form>
+          <pre id="createOut" style="background:#0b1020; color:#e2e8f0; padding:12px; border-radius:8px; overflow:auto;">Fill fields and submit</pre>
+        </div>
+        <div class="card" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex: 1; min-width: 260px;">
+          <h3>Symptom Tracker</h3>
+          <div style="margin-bottom: 12px;">
+            <button type="button" id="dailyCheckinBtn">Daily Check-In</button>
+          </div>
+          <form id="formSymptom" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+            <input type="text" id="symptomName" placeholder="Symptom name" required style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px;" />
+            <input type="number" id="painLevel" placeholder="Pain level (1–10)" min="1" max="10" required style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px;" />
+            <textarea id="notes" placeholder="Notes (optional)" style="padding:6px 10px; border:1px solid #d1d5db; border-radius:6px; resize:vertical; min-height:60px;"></textarea>
+            <button type="submit" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;">Add Symptom</button>
+          </form>
+          <div style="margin-top:8px">
+            <button id="btnLoadSymptoms" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;">Load Symptoms</button>
+            <div id="symptomsContainer" style="margin-top:12px">
+              <div id="symptomsCards"></div>
+              <pre id="symptomOut" style="background:#0b1020; color:#e2e8f0; padding:12px; border-radius:8px; overflow:auto; display:none;">No data yet</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pain Chart Section -->
+      <div class="card" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-top: 16px;">
+        <h3>Average Pain Over Time</h3>
+        <div style="max-width: 600px; margin: 30px auto;">
+          <canvas id="painChart" width="600" height="300"></canvas>
+        </div>
+      </div>
+
+      <!-- Group Chat Section -->
+      <div class="card" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-top: 16px;">
+        <h3>Group Chat</h3>
+
+        <div class="row" style="gap:8px; align-items:center; margin-bottom:8px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <label for="groupSelect" style="color:#6b7280; font-size: 0.92rem;">Group</label>
+          <select id="groupSelect"></select>
+          <button id="btnReloadGroups" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;">Reload Groups</button>
+        </div>
+        
+        <div id="currentGroupDisplay" style="color:#6b7280; margin-bottom:8px; font-size:0.9rem;">
+          Select a group to start chatting...
+        </div>
+
+        <div class="chat-container" style="display: flex; flex-direction: column; height: 500px;">
+          <div id="chatBox" class="chat-messages" style="flex: 1; overflow-y: auto; padding: 12px; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; max-height: 400px;">
+            <div style="color:#6b7280; font-size: 0.92rem;">Select a group to load messages…</div>
+          </div>
+
+          <div class="chat-input-container" style="display: flex; gap: 8px; align-items: flex-end;">
+            <textarea id="chatText" class="chat-input" placeholder="Type a message… (Enter to send, Shift+Enter for new line)" style="flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; resize: none; min-height: 40px; max-height: 120px; font-family: inherit;"></textarea>
+            <button id="btnSend" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;">Send</button>
+          </div>
+        </div>
+
+        <pre id="chatOut" style="color:#6b7280; font-size: 0.92rem; margin-top:8px;">Ready</pre>
+      </div>
+    </div>
+    <div id="toast" style="display:none;color:#b00020;margin-top:10px;font-weight:600;"></div>
+  </main>
+
+  <script>
+    fetch('partials/sidebar.html')
+      .then(r => r.text())
+      .then(html => { document.getElementById('sidebar').innerHTML = html; });
+  </script>
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

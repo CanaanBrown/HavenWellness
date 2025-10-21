@@ -1,0 +1,422 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HavenWellness</name>
+    </assembly>
+    <members>
+        <member name="T:HavenWellness.Controllers.DebugController">
+            <summary>
+            Debug controller for development and testing purposes
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.DebugController.GetSeedInfo">
+            <summary>
+            Returns counts of all major tables in the database
+            </summary>
+            <returns>JSON object with table counts</returns>
+        </member>
+        <member name="T:HavenWellness.Controllers.GroupsController">
+            <summary>
+            Controller for managing groups
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.GroupsController.GetGroups">
+            <summary>
+            Get all groups
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.GroupsController.GetGroup(System.Int32)">
+            <summary>
+            Get a specific group by ID
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.GroupsController.CreateGroup(HavenWellness.Models.Group)">
+            <summary>
+            Create a new group
+            </summary>
+            <param name="group">The group object to create</param>
+            <returns>The created group with assigned ID</returns>
+            <response code="201">Group created successfully</response>
+            <response code="400">Invalid group data</response>
+            <remarks>
+            Sample request:
+            
+                POST /api/groups
+                {
+                    "groupName": "Chronic Pain Support Group",
+                    "description": "A supportive community for people managing chronic pain conditions"
+                }
+            
+            Sample response:
+            
+                {
+                    "id": 1,
+                    "groupName": "Chronic Pain Support Group",
+                    "description": "A supportive community for people managing chronic pain conditions",
+                    "userGroups": [],
+                    "groupMessages": []
+                }
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.GroupsController.UpdateGroup(System.Int32,HavenWellness.Models.Group)">
+            <summary>
+            Update an existing group
+            </summary>
+            <param name="id">The ID of the group to update</param>
+            <param name="group">The updated group data</param>
+            <returns>No content if successful</returns>
+            <response code="204">Group updated successfully</response>
+            <response code="400">Invalid group data or ID mismatch</response>
+            <response code="404">Group not found</response>
+            <remarks>
+            Sample request:
+            
+                PUT /api/groups/1
+                {
+                    "id": 1,
+                    "groupName": "Updated Chronic Pain Support Group",
+                    "description": "Updated description for the support group"
+                }
+            
+            Sample response:
+            
+                HTTP 204 No Content
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.GroupsController.DeleteGroup(System.Int32)">
+            <summary>
+            Delete a group
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Controllers.MessagesController">
+            <summary>
+            Controller for managing group messages
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.MessagesController.GetMessages(System.Int32,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Get all messages with pagination and optional group filter
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.MessagesController.GetMessage(System.Int32)">
+            <summary>
+            Get a specific message by ID
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.MessagesController.CreateMessage(HavenWellness.Models.GroupMessage)">
+            <summary>
+            Create a new message
+            </summary>
+            <param name="message">The message object to create</param>
+            <returns>The created message with assigned ID and timestamp</returns>
+            <response code="201">Message created successfully</response>
+            <response code="400">Invalid message data or invalid GroupId/UserId</response>
+            <remarks>
+            Sample request:
+            
+                POST /api/messages
+                {
+                    "groupId": 1,
+                    "userId": 1,
+                    "messageText": "Hello everyone! I'm new to this group and looking forward to connecting with others."
+                }
+            
+            Sample response:
+            
+                {
+                    "id": 1,
+                    "groupId": 1,
+                    "userId": 1,
+                    "messageText": "Hello everyone! I'm new to this group and looking forward to connecting with others.",
+                    "timestamp": "2024-01-15T10:30:00Z",
+                    "group": null,
+                    "user": null
+                }
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.MessagesController.UpdateMessage(System.Int32,HavenWellness.Models.GroupMessage)">
+            <summary>
+            Update an existing message
+            </summary>
+            <param name="id">The ID of the message to update</param>
+            <param name="message">The updated message data</param>
+            <returns>No content if successful</returns>
+            <response code="204">Message updated successfully</response>
+            <response code="400">Invalid message data or ID mismatch</response>
+            <response code="404">Message not found</response>
+            <remarks>
+            Sample request:
+            
+                PUT /api/messages/1
+                {
+                    "id": 1,
+                    "groupId": 1,
+                    "userId": 1,
+                    "messageText": "Updated message content with corrections",
+                    "timestamp": "2024-01-15T10:30:00Z"
+                }
+            
+            Sample response:
+            
+                HTTP 204 No Content
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.MessagesController.DeleteMessage(System.Int32)">
+            <summary>
+            Delete a message
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Controllers.SymptomsController">
+            <summary>
+            Controller for managing symptom entries and details
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.GetSymptoms(System.Int32,System.Int32,System.Nullable{System.Int32},System.String,System.String)">
+            <summary>
+            Get all symptom entries with pagination and optional filters
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.GetSymptom(System.Int32)">
+            <summary>
+            Get a specific symptom entry by ID
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.CreateSymptom(HavenWellness.Models.SymptomEntry)">
+            <summary>
+            Create a new symptom entry
+            </summary>
+            <param name="symptom">The symptom entry object to create</param>
+            <returns>The created symptom entry with assigned ID</returns>
+            <response code="201">Symptom entry created successfully</response>
+            <response code="400">Invalid symptom data or invalid UserId</response>
+            <remarks>
+            Sample request:
+            
+                POST /api/symptoms
+                {
+                    "userId": 1,
+                    "date": "2024-01-15"
+                }
+            
+            Sample response:
+            
+                {
+                    "id": 1,
+                    "userId": 1,
+                    "date": "2024-01-15",
+                    "user": null,
+                    "symptomDetails": []
+                }
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.UpdateSymptom(System.Int32,HavenWellness.Models.SymptomEntry)">
+            <summary>
+            Update an existing symptom entry
+            </summary>
+            <param name="id">The ID of the symptom entry to update</param>
+            <param name="symptom">The updated symptom entry data</param>
+            <returns>No content if successful</returns>
+            <response code="204">Symptom entry updated successfully</response>
+            <response code="400">Invalid symptom data or ID mismatch</response>
+            <response code="404">Symptom entry not found</response>
+            <remarks>
+            Sample request:
+            
+                PUT /api/symptoms/1
+                {
+                    "id": 1,
+                    "userId": 1,
+                    "date": "2024-01-15"
+                }
+            
+            Sample response:
+            
+                HTTP 204 No Content
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.DeleteSymptom(System.Int32)">
+            <summary>
+            Delete a symptom entry
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.GetSymptomDetails(System.Int32)">
+            <summary>
+            Get symptom details for a specific symptom entry
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.CreateSymptomDetail(HavenWellness.Models.SymptomDetail)">
+            <summary>
+            Create a new symptom detail
+            </summary>
+            <param name="detail">The symptom detail object to create</param>
+            <returns>The created symptom detail with assigned ID</returns>
+            <response code="201">Symptom detail created successfully</response>
+            <response code="400">Invalid symptom detail data or invalid SymptomEntryId</response>
+            <remarks>
+            Sample request:
+            
+                POST /api/symptoms/details
+                {
+                    "symptomEntryId": 1,
+                    "name": "Headache",
+                    "painLevel": 7,
+                    "notes": "Sharp pain in temples, started this morning"
+                }
+            
+            Sample response:
+            
+                {
+                    "id": 1,
+                    "symptomEntryId": 1,
+                    "name": "Headache",
+                    "painLevel": 7,
+                    "notes": "Sharp pain in temples, started this morning",
+                    "symptomEntry": null
+                }
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.UpdateSymptomDetail(System.Int32,HavenWellness.Models.SymptomDetail)">
+            <summary>
+            Update an existing symptom detail
+            </summary>
+            <param name="id">The ID of the symptom detail to update</param>
+            <param name="detail">The updated symptom detail data</param>
+            <returns>No content if successful</returns>
+            <response code="204">Symptom detail updated successfully</response>
+            <response code="400">Invalid symptom detail data or ID mismatch</response>
+            <response code="404">Symptom detail not found</response>
+            <remarks>
+            Sample request:
+            
+                PUT /api/symptoms/details/1
+                {
+                    "id": 1,
+                    "symptomEntryId": 1,
+                    "name": "Migraine Headache",
+                    "painLevel": 8,
+                    "notes": "Updated: Severe migraine with nausea, lasted 4 hours"
+                }
+            
+            Sample response:
+            
+                HTTP 204 No Content
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.SymptomsController.DeleteSymptomDetail(System.Int32)">
+            <summary>
+            Delete a symptom detail
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Controllers.UsersController">
+            <summary>
+            Controller for managing users
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.UsersController.GetUsers(System.Int32,System.Int32)">
+            <summary>
+            Get all users with pagination
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.UsersController.GetUser(System.Int32)">
+            <summary>
+            Get a specific user by ID
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.UsersController.CreateUser(HavenWellness.Models.User)">
+            <summary>
+            Create a new user
+            </summary>
+            <param name="user">The user object to create</param>
+            <returns>The created user with assigned ID and DateJoined</returns>
+            <response code="201">User created successfully</response>
+            <response code="400">Invalid user data</response>
+            <remarks>
+            Sample request:
+            
+                POST /api/users
+                {
+                    "name": "John Doe",
+                    "email": "john.doe@example.com",
+                    "passwordHash": "hashed_password_string"
+                }
+            
+            Sample response:
+            
+                {
+                    "id": 1,
+                    "name": "John Doe",
+                    "email": "john.doe@example.com",
+                    "passwordHash": "hashed_password_string",
+                    "dateJoined": "2024-01-15T10:30:00Z",
+                    "symptomEntries": [],
+                    "userGroups": [],
+                    "groupMessages": []
+                }
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.UsersController.UpdateUser(System.Int32,HavenWellness.Models.User)">
+            <summary>
+            Update an existing user
+            </summary>
+            <param name="id">The ID of the user to update</param>
+            <param name="user">The updated user data</param>
+            <returns>No content if successful</returns>
+            <response code="204">User updated successfully</response>
+            <response code="400">Invalid user data or ID mismatch</response>
+            <response code="404">User not found</response>
+            <remarks>
+            Sample request:
+            
+                PUT /api/users/1
+                {
+                    "id": 1,
+                    "name": "John Smith",
+                    "email": "john.smith@example.com",
+                    "passwordHash": "updated_hashed_password",
+                    "dateJoined": "2024-01-15T10:30:00Z"
+                }
+            
+            Sample response:
+            
+                HTTP 204 No Content
+            </remarks>
+        </member>
+        <member name="M:HavenWellness.Controllers.UsersController.DeleteUser(System.Int32)">
+            <summary>
+            Delete a user
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Data.WellnessContext">
+            <summary>
+            Entity Framework context for the Haven Wellness platform
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Migrations.Init">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.Init.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.Init.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:HavenWellness.Models.Group">
+            <summary>
+            Represents a support group for users with chronic illnesses
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Models.User">
+            <summary>
+            Represents a user in the wellness platform
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Models.UserGroup">
+            <summary>
+            Join table for many-to-many relationship between Users and Groups
+            </summary>
+        </member>
+    </members>
+</doc>
