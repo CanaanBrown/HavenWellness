@@ -2892,19 +2892,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\annap\\.nuget\\packages\\": {}
+    "C:\\Users\\cbb4b\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\annap\\Documents\\source\\repos\\PAs\\HavenWellness\\HavenWellness\\HavenWellness.csproj",
+      "projectUniqueName": "C:\\Users\\cbb4b\\OneDrive\\Documents\\MIS Class\\Haven Wellness\\HavenWellness\\HavenWellness.csproj",
       "projectName": "HavenWellness",
-      "projectPath": "C:\\Users\\annap\\Documents\\source\\repos\\PAs\\HavenWellness\\HavenWellness\\HavenWellness.csproj",
-      "packagesPath": "C:\\Users\\annap\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\annap\\Documents\\source\\repos\\PAs\\HavenWellness\\HavenWellness\\obj\\",
+      "projectPath": "C:\\Users\\cbb4b\\OneDrive\\Documents\\MIS Class\\Haven Wellness\\HavenWellness\\HavenWellness.csproj",
+      "packagesPath": "C:\\Users\\cbb4b\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\cbb4b\\OneDrive\\Documents\\MIS Class\\Haven Wellness\\HavenWellness\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\annap\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\cbb4b\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -2928,7 +2928,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net9.0": {
@@ -2976,7 +2976,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

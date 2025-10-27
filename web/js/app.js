@@ -4,7 +4,7 @@
 class HavenWellnessApp {
     constructor() {
         this.currentView = 'landing';
-        this.currentSection = 'dashboard';
+        this.currentSection = 'home';
         this.isAuthenticated = false;
         this.init();
     }
@@ -111,7 +111,16 @@ class HavenWellnessApp {
             case 'dashboard':
                 app.innerHTML = Views.dashboard();
                 this.attachDashboardEventListeners();
-                this.loadDashboardContent();
+                // Load the current section instead of always loading dashboard home
+                if (this.currentSection && this.currentSection !== 'home' && this.currentSection !== 'dashboard') {
+                    const section = this.currentSection;
+                    // Use setTimeout to ensure DOM is ready
+                    setTimeout(() => {
+                        this.loadSectionContent(section);
+                    }, 0);
+                } else {
+                    this.loadDashboardContent();
+                }
                 break;
             case 'profilePage':
                 console.log('Rendering profile page...');
@@ -157,11 +166,12 @@ class HavenWellnessApp {
     showDashboard() {
         if (!this.isAuthenticated) {
             this.showAuth();
-      return;
+            return;
         }
         this.currentView = 'dashboard';
-        this.currentSection = 'dashboard';
+        this.currentSection = 'home';
         this.render();
+        this.loadSectionContent('home');
         this.updateURL('dashboard');
     }
     
@@ -294,7 +304,12 @@ class HavenWellnessApp {
         console.log('Rendering groups list with', groups.length, 'groups');
         const groupsList = document.getElementById('groupsList');
         if (!groupsList) {
-            console.error('Groups list element not found!');
+            console.error('Groups list element not found! Current section:', this.currentSection);
+            // If we're on the groups page but the element doesn't exist, try to reload the section
+            if (this.currentSection === 'groups') {
+                console.log('Attempting to reload groups content...');
+                this.loadSectionContent('groups');
+            }
             return;
         }
         
@@ -660,6 +675,16 @@ class HavenWellnessApp {
         
         content.innerHTML = Views.dashboardHome();
         
+        // Update active sidebar item based on currentSection
+        const section = this.currentSection || 'home';
+        document.querySelectorAll('.sidebar .nav-link, .offcanvas-body .nav-link').forEach(link => {
+            link.classList.remove('active');
+            const linkSection = link.getAttribute('data-section');
+            if (linkSection === section) {
+                link.classList.add('active');
+            }
+        });
+        
         // Small delay to ensure DOM is ready
         setTimeout(async () => {
         await this.loadDashboardStats();
@@ -679,7 +704,8 @@ class HavenWellnessApp {
         // Update active sidebar item
         document.querySelectorAll('.sidebar .nav-link, .offcanvas-body .nav-link').forEach(link => {
             link.classList.remove('active');
-            if (link.textContent.toLowerCase().includes(section)) {
+            const linkSection = link.getAttribute('data-section');
+            if (linkSection === section) {
                 link.classList.add('active');
             }
         });
@@ -707,6 +733,16 @@ class HavenWellnessApp {
             case 'pairing':
                 await this.loadPairingContent();
                 break;
+            case 'settings':
+                await this.loadSettingsContent();
+                break;
+            case 'dashboard':
+            case 'home':
+                await this.loadDashboardContent();
+                break;
+            default:
+                console.warn('Unknown section:', section);
+                await this.loadDashboardContent();
         }
     }
     
@@ -975,7 +1011,15 @@ class HavenWellnessApp {
     
     async loadSymptomsData() {
         const container = document.getElementById('symptomsList');
-        if (!container) return;
+        if (!container) {
+            console.error('Symptoms list element not found! Current section:', this.currentSection);
+            // If we're on the symptoms page but the element doesn't exist, try to reload the section
+            if (this.currentSection === 'symptoms') {
+                console.log('Attempting to reload symptoms content...');
+                this.loadSectionContent('symptoms');
+            }
+            return;
+        }
         
         try {
             const userId = Auth.getCurrentUserId();
@@ -2084,6 +2128,12 @@ class HavenWellnessApp {
         }, 100);
     }
     
+    async loadSettingsContent() {
+        const content = document.getElementById('dashboardContent');
+        if (!content) return;
+        content.innerHTML = Views.settings();
+    }
+    
     async loadMyPairings() {
         try {
             console.log('Loading my pairings...');
@@ -2865,7 +2915,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.showChangePassword = () => {
         // Placeholder for change password functionality
         console.log('Change password clicked');
-        // In a real app, this would show a password change modal
+        if (window.HavenWellnessApp && window.HavenWellnessApp.showToast) {
+            window.HavenWellnessApp.showToast('Password change feature coming soon!', 'info');
+        }
     };
     
     window.showPrivacySettings = () => {
@@ -2874,10 +2926,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // In a real app, this would show privacy settings modal
     };
     
+    window.showToast = (message, type = 'info') => {
+        if (window.HavenWellnessApp && window.HavenWellnessApp.showToast) {
+            window.HavenWellnessApp.showToast(message, type);
+        } else {
+            console.log(`${type.toUpperCase()}: ${message}`);
+        }
+    };
+    
     window.showSettings = () => {
-        // Placeholder for settings functionality
-        console.log('Settings clicked');
-        // In a real app, this would show settings modal or page
+        if (window.HavenWellnessApp && window.HavenWellnessApp.showSection) {
+            window.HavenWellnessApp.showSection('settings');
+        } else {
+            console.error('HavenWellnessApp or showSection not available');
+        }
     };
     
     window.showAuth = () => {
@@ -2928,6 +2990,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showChangePassword: typeof window.showChangePassword,
         showPrivacySettings: typeof window.showPrivacySettings,
         showSettings: typeof window.showSettings,
+        showToast: typeof window.showToast,
         showAuth: typeof window.showAuth,
         showLanding: typeof window.showLanding,
         scrollToFeatures: typeof window.scrollToFeatures

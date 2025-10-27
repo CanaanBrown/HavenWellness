@@ -260,28 +260,28 @@ const Views = {
                         </div>
                     </div>
                     <nav class="nav flex-column p-3">
-                        <button class="nav-link text-start border-0 bg-transparent active text-white" onclick="showSection('home')" style="color: white !important; background: rgba(255, 255, 255, 0.1) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="home" onclick="showSection('home')" style="border-radius: 8px; margin: 2px 0;">
                             Dashboard
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('symptoms')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="symptoms" onclick="showSection('symptoms')" style="border-radius: 8px; margin: 2px 0;">
                             Symptoms
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('groups')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="groups" onclick="showSection('groups')" style="border-radius: 8px; margin: 2px 0;">
                             Groups
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('analytics')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="analytics" onclick="showSection('analytics')" style="border-radius: 8px; margin: 2px 0;">
                             Analytics
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('chats')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="chats" onclick="showSection('chats')" style="border-radius: 8px; margin: 2px 0;">
                             Chats
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('pairing')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="pairing" onclick="showSection('pairing')" style="border-radius: 8px; margin: 2px 0;">
                             Pairing
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showProfilePage()" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="profile" onclick="showProfilePage()" style="border-radius: 8px; margin: 2px 0;">
                             Profile
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSettings()" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="settings" onclick="showSettings()" style="border-radius: 8px; margin: 2px 0;">
                             Settings
                         </button>
                     </nav>
@@ -325,28 +325,28 @@ const Views = {
                 </div>
                 <div class="offcanvas-body">
                     <nav class="nav flex-column">
-                        <button class="nav-link text-start border-0 bg-transparent active text-white" onclick="showSection('home')" style="color: white !important; background: rgba(255, 255, 255, 0.1) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="home" onclick="showSection('home')" style="border-radius: 8px; margin: 2px 0;">
                             Dashboard
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('symptoms')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="symptoms" onclick="showSection('symptoms')" style="border-radius: 8px; margin: 2px 0;">
                             Symptoms
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('groups')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="groups" onclick="showSection('groups')" style="border-radius: 8px; margin: 2px 0;">
                             Groups
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('analytics')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="analytics" onclick="showSection('analytics')" style="border-radius: 8px; margin: 2px 0;">
                             Analytics
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('chats')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="chats" onclick="showSection('chats')" style="border-radius: 8px; margin: 2px 0;">
                             Chats
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSection('pairing')" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="pairing" onclick="showSection('pairing')" style="border-radius: 8px; margin: 2px 0;">
                             Pairing
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showProfilePage()" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="profile" onclick="showProfilePage()" style="border-radius: 8px; margin: 2px 0;">
                             Profile
                         </button>
-                        <button class="nav-link text-start border-0 bg-transparent text-white-50" onclick="showSettings()" style="color: rgba(255, 255, 255, 0.7) !important; border-radius: 8px; margin: 2px 0;">
+                        <button class="nav-link text-start border-0 bg-transparent" data-section="settings" onclick="showSettings()" style="border-radius: 8px; margin: 2px 0;">
                             Settings
                         </button>
                     </nav>
@@ -1186,6 +1186,91 @@ const Views = {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Render settings view
+     */
+    settings() {
+        return `
+            <div class="container-fluid py-4">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-4" style="color: #fef3c7;">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </h2>
+                        
+                        <!-- Notification Settings Card -->
+                        <div class="card mb-4" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px 15px 0 0;">
+                                <h5 class="mb-0" style="color: #fef3c7;">
+                                    <i class="fas fa-bell me-2"></i>Notifications
+                                </h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="emailNotifications" style="accent-color: #d97706;">
+                                    <label class="form-check-label" for="emailNotifications" style="color: #fef3c7;">
+                                        Email Notifications
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="groupUpdates" checked style="accent-color: #d97706;">
+                                    <label class="form-check-label" for="groupUpdates" style="color: #fef3c7;">
+                                        Group Updates
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="pairingRequests" checked style="accent-color: #d97706;">
+                                    <label class="form-check-label" for="pairingRequests" style="color: #fef3c7;">
+                                        Pairing Requests
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Settings Card -->
+                        <div class="card mb-4" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px 15px 0 0;">
+                                <h5 class="mb-0" style="color: #fef3c7;">
+                                    <i class="fas fa-shield-alt me-2"></i>Privacy
+                                </h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="mb-3">
+                                    <label for="profileVisibility" class="form-label" style="color: #fef3c7;">Profile Visibility</label>
+                                    <select class="form-select" id="profileVisibility" style="background: rgba(255, 255, 255, 0.1); border-color: #d97706; color: #fef3c7;">
+                                        <option value="public">Public</option>
+                                        <option value="private">Private</option>
+                                        <option value="friends">Friends Only</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="showToast('Privacy settings saved', 'success')" style="background: #d97706; border-color: #d97706;">
+                                    <i class="fas fa-save me-2"></i>Save Privacy Settings
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Account Actions Card -->
+                        <div class="card" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px 15px 0 0;">
+                                <h5 class="mb-0" style="color: #fef3c7;">
+                                    <i class="fas fa-user-cog me-2"></i>Account
+                                </h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <button class="btn btn-outline-primary w-100 mb-3" onclick="showChangePassword()" style="border-color: #d97706; color: #fef3c7;">
+                                    <i class="fas fa-key me-2"></i>Change Password
+                                </button>
+                                <button class="btn btn-outline-danger w-100" onclick="showToast('Account deletion is not yet available', 'error')" style="border-color: #dc3545; color: #ff6b6b;">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete Account
+                                </button>
                             </div>
                         </div>
                     </div>
