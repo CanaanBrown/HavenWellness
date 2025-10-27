@@ -83,6 +83,26 @@
             color: white;
         }
         
+        /* Sidebar navigation styling */
+        .sidebar .nav-link.active, .offcanvas-body .nav-link.active {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+        }
+        
+        .sidebar .nav-link:not(.active), .offcanvas-body .nav-link:not(.active) {
+            color: rgba(255, 255, 255, 0.7) !important;
+            background: transparent !important;
+        }
+        
+        .sidebar .nav-link:hover, .offcanvas-body .nav-link:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            color: white !important;
+        }
+        
+        .sidebar .nav-link.active:hover, .offcanvas-body .nav-link.active:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+        
         .card {
             border: none;
             border-radius: 15px;

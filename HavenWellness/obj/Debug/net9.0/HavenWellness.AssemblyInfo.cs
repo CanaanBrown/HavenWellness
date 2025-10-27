@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HavenWellness")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c2b5075013135fc0f80ede377c253a7c05ce5da1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae3650e91fbc142b56dc5ff081c7a9ddfbd37911")]
 [assembly: System.Reflection.AssemblyProductAttribute("HavenWellness")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HavenWellness")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
