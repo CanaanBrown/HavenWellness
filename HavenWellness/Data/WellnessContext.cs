@@ -17,8 +17,10 @@ public class WellnessContext : DbContext
     public DbSet<Group> Groups { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<GroupMessage> GroupMessages { get; set; }
+    public DbSet<PrivateMessage> PrivateMessages { get; set; }
     public DbSet<SymptomEntry> SymptomEntries { get; set; }
     public DbSet<SymptomDetail> SymptomDetails { get; set; }
+    public DbSet<Pairing> Pairings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -100,6 +102,56 @@ public class WellnessContext : DbContext
             entity.HasOne(sd => sd.SymptomEntry)
                 .WithMany(se => se.SymptomDetails)
                 .HasForeignKey(sd => sd.SymptomEntryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure PrivateMessage entity
+        modelBuilder.Entity<PrivateMessage>(entity =>
+        {
+            entity.Property(e => e.MessageText).IsRequired().HasMaxLength(1000);
+            entity.HasIndex(e => e.SenderId);
+            entity.HasIndex(e => e.ReceiverId);
+            entity.HasIndex(e => new { e.SenderId, e.ReceiverId });
+
+            entity.HasOne(pm => pm.Sender)
+                .WithMany()
+                .HasForeignKey(pm => pm.SenderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(pm => pm.Receiver)
+                .WithMany()
+                .HasForeignKey(pm => pm.ReceiverId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure Pairing entity
+        modelBuilder.Entity<Pairing>(entity =>
+        {
+            // Only enforce uniqueness for active pairings
+            entity.HasIndex(e => new { e.GroupId, e.User1Id, e.IsActive })
+                .HasFilter("IsActive = 1")
+                .IsUnique();
+            entity.HasIndex(e => new { e.GroupId, e.User2Id, e.IsActive })
+                .HasFilter("IsActive = 1")
+                .IsUnique();
+            entity.HasIndex(e => e.GroupId);
+            entity.HasIndex(e => e.User1Id);
+            entity.HasIndex(e => e.User2Id);
+            entity.HasIndex(e => e.IsActive);
+
+            entity.HasOne(p => p.Group)
+                .WithMany(g => g.Pairings)
+                .HasForeignKey(p => p.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(p => p.User1)
+                .WithMany()
+                .HasForeignKey(p => p.User1Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(p => p.User2)
+                .WithMany()
+                .HasForeignKey(p => p.User2Id)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

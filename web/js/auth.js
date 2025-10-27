@@ -7,7 +7,7 @@ const Auth = {
     
     /**
      * Save user session to localStorage
-     * @param {Object} user - User object with id, name, email
+     * @param {Object} user - User object with id, name, email and any additional profile data
      */
     saveSession(user) {
         const session = {
@@ -15,7 +15,13 @@ const Auth = {
             name: user.name,
             email: user.email,
             isAuthenticated: true,
-            loginTime: new Date().toISOString()
+            loginTime: user.loginTime || new Date().toISOString(),
+            // Preserve any additional profile data
+            age: user.age,
+            location: user.location,
+            bio: user.bio,
+            conditions: user.conditions,
+            interests: user.interests
         };
         
         try {
@@ -117,7 +123,13 @@ const Auth = {
             name: session.name,
             email: session.email,
             isAuthenticated: session.isAuthenticated,
-            loginTime: session.loginTime
+            loginTime: session.loginTime,
+            // Include all profile data
+            age: session.age,
+            location: session.location,
+            bio: session.bio,
+            conditions: session.conditions,
+            interests: session.interests
         };
     },
     

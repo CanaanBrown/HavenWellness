@@ -3,6 +3,7 @@ using System;
 using HavenWellness.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HavenWellness.Migrations
 {
     [DbContext(typeof(WellnessContext))]
-    partial class WellnessContextModelSnapshot : ModelSnapshot
+    [Migration("20251027022458_AddPairingModel")]
+    partial class AddPairingModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -55,7 +58,7 @@ namespace HavenWellness.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 10, 27, 5, 2, 55, 555, DateTimeKind.Utc).AddTicks(38),
+                            CreatedDate = new DateTime(2025, 10, 27, 2, 24, 57, 925, DateTimeKind.Utc).AddTicks(4853),
                             Description = "A supportive community for students managing chronic health conditions",
                             GroupName = "Chronic Illness Support",
                             IsPrivate = false
@@ -134,55 +137,17 @@ namespace HavenWellness.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("IsActive");
-
                     b.HasIndex("User1Id");
 
                     b.HasIndex("User2Id");
 
-                    b.HasIndex("GroupId", "User1Id", "IsActive")
-                        .IsUnique()
-                        .HasFilter("IsActive = 1");
+                    b.HasIndex("GroupId", "User1Id")
+                        .IsUnique();
 
-                    b.HasIndex("GroupId", "User2Id", "IsActive")
-                        .IsUnique()
-                        .HasFilter("IsActive = 1");
+                    b.HasIndex("GroupId", "User2Id")
+                        .IsUnique();
 
                     b.ToTable("Pairings");
-                });
-
-            modelBuilder.Entity("HavenWellness.Models.PrivateMessage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("MessageText")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.HasIndex("SenderId", "ReceiverId");
-
-                    b.ToTable("PrivateMessages");
                 });
 
             modelBuilder.Entity("HavenWellness.Models.SymptomDetail", b =>
@@ -359,7 +324,7 @@ namespace HavenWellness.Migrations
                         {
                             Id = 1,
                             GroupId = 1,
-                            JoinedDate = new DateTime(2025, 10, 27, 5, 2, 55, 555, DateTimeKind.Utc).AddTicks(54),
+                            JoinedDate = new DateTime(2025, 10, 27, 2, 24, 57, 925, DateTimeKind.Utc).AddTicks(4901),
                             Role = "Member",
                             UserId = 1
                         });
@@ -409,25 +374,6 @@ namespace HavenWellness.Migrations
                     b.Navigation("User1");
 
                     b.Navigation("User2");
-                });
-
-            modelBuilder.Entity("HavenWellness.Models.PrivateMessage", b =>
-                {
-                    b.HasOne("HavenWellness.Models.User", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HavenWellness.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("HavenWellness.Models.SymptomDetail", b =>

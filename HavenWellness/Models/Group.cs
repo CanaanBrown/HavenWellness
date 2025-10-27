@@ -30,4 +30,5 @@ public class Group
     // Navigation properties
     public virtual ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
     public virtual ICollection<GroupMessage> GroupMessages { get; set; } = new List<GroupMessage>();
+    public virtual ICollection<Pairing> Pairings { get; set; } = new List<Pairing>();
 }

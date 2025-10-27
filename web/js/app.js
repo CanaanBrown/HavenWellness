@@ -187,7 +187,7 @@ class HavenWellnessApp {
         
         // Only render if we're not already in dashboard view
         if (document.getElementById('app').innerHTML === '' || !document.getElementById('dashboardContent')) {
-            this.render();
+        this.render();
         }
         
         this.loadSectionContent('groups');
@@ -196,18 +196,21 @@ class HavenWellnessApp {
     }
     
     showSection(section) {
+        console.log('showSection called with:', section);
         if (!this.isAuthenticated) {
             this.showAuth();
             return;
         }
         this.currentView = 'dashboard';
         this.currentSection = section;
+        console.log('Current section set to:', this.currentSection);
         
         // Only render if we're not already in dashboard view
         if (document.getElementById('app').innerHTML === '' || !document.getElementById('dashboardContent')) {
             this.render();
         }
         
+        console.log('Calling loadSectionContent with:', section);
         this.loadSectionContent(section);
         this.updateURL(section);
     }
@@ -272,7 +275,11 @@ class HavenWellnessApp {
     async loadGroups() {
         try {
             console.log('Loading groups...');
-            const groups = await API.groups.list();
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            console.log('Current user ID:', userId);
+            
+            const groups = await API.groups.list(userId);
             console.log('Groups loaded:', groups);
             console.log('Number of groups:', groups.length);
             this.renderGroupsList(groups);
@@ -294,11 +301,11 @@ class HavenWellnessApp {
         if (groups.length === 0) {
             groupsList.innerHTML = `
                 <div class="text-center py-5">
-                    <div class="mb-3" style="font-size: 3rem; color: #f59e0b;">👥</div>
-                    <h4 style="color: #fef3c7;">No groups found</h4>
+                    <div class="mb-3" style="font-size: 3rem; color: #8D8741;">👥</div>
+                    <h4 style="color: #FBEEC1;">No groups found</h4>
                     <p style="color: #fbbf24;">Be the first to create a support group!</p>
                     <button class="btn btn-primary" onclick="showCreateGroup()" 
-                            style="background: #d97706; border-color: #d97706;">
+                            style="background: #659DBD; border-color: #659DBD;">
                         <i class="fas fa-plus me-2"></i>Create Group
                     </button>
                 </div>
@@ -311,8 +318,8 @@ class HavenWellnessApp {
                 <div class="card h-100" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title mb-0" style="color: #fef3c7;">${group.groupName}</h5>
-                            <span class="badge" style="background: #d97706; color: white;">${group.category || 'General'}</span>
+                            <h5 class="card-title mb-0" style="color: #FBEEC1;">${group.groupName}</h5>
+                            <span class="badge" style="background: #659DBD; color: white;">${group.category || 'General'}</span>
                         </div>
                         <p class="card-text flex-grow-1" style="color: #fbbf24;">${group.description}</p>
                         
@@ -320,7 +327,7 @@ class HavenWellnessApp {
                             <div class="mb-3">
                                 <div class="d-flex flex-wrap gap-1">
                                     ${group.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0).map(tag => `
-                                        <span class="badge" style="background: rgba(217, 119, 6, 0.2); color: #f59e0b; border: 1px solid #d97706;">
+                                        <span class="badge" style="background: rgba(217, 119, 6, 0.2); color: #8D8741; border: 1px solid #659DBD;">
                                             ${tag}
                                         </span>
                                     `).join('')}
@@ -329,16 +336,16 @@ class HavenWellnessApp {
                         ` : ''}
                         
                            <div class="d-flex justify-content-between align-items-center">
-                               <small class="text-muted" style="color: #a16207;">
+                               <small class="text-muted" style="color: #8D8741;">
                                    <i class="fas fa-users me-1"></i>${group.memberCount || 0} members
-                                   ${group.userRole === 'Owner' ? '<span class="badge ms-2" style="background: #d97706; color: white;">Owner</span>' : ''}
+                                   ${group.userRole === 'Owner' ? '<span class="badge ms-2" style="background: #659DBD; color: white;">Owner</span>' : ''}
                                </small>
                                ${group.isMember ? 
                                    (group.userRole === 'Owner' ? 
-                                       '<button class="btn btn-sm btn-outline-warning" onclick="manageGroup(' + group.id + ')" style="border-color: #f59e0b; color: #f59e0b;">Manage</button>' :
+                                       '<button class="btn btn-sm btn-outline-warning" onclick="manageGroup(' + group.id + ')" style="border-color: #8D8741; color: #8D8741;">Manage</button>' :
                                        '<button class="btn btn-sm btn-outline-danger" onclick="leaveGroup(' + group.id + ')" style="border-color: #dc2626; color: #dc2626;">Leave</button>'
                                    ) : 
-                                   '<button class="btn btn-sm btn-outline-primary" onclick="joinGroup(' + group.id + ')" style="border-color: #d97706; color: #d97706;">Join Group</button>'
+                                   '<button class="btn btn-sm btn-outline-primary" onclick="joinGroup(' + group.id + ')" style="border-color: #659DBD; color: #659DBD;">Join Group</button>'
                                }
                            </div>
                     </div>
@@ -399,7 +406,13 @@ class HavenWellnessApp {
     
     async joinGroup(groupId) {
         try {
-            await API.groups.join(groupId);
+            const user = Auth.getCurrentUser();
+            if (!user) {
+                this.showNotification('Please log in to join groups', 'error');
+                return;
+            }
+            
+            await API.groups.join(groupId, user.id);
             this.showNotification('Successfully joined the group!', 'success');
             this.loadGroups(); // Refresh the groups list
             
@@ -415,7 +428,13 @@ class HavenWellnessApp {
     
     async leaveGroup(groupId) {
         try {
-            await API.groups.leave(groupId);
+            const user = Auth.getCurrentUser();
+            if (!user) {
+                this.showNotification('Please log in to leave groups', 'error');
+                return;
+            }
+            
+            await API.groups.leave(groupId, user.id);
             this.showNotification('Successfully left the group!', 'success');
             this.loadGroups(); // Refresh the groups list
             
@@ -561,7 +580,7 @@ class HavenWellnessApp {
                 else if (text.includes('Symptoms')) this.showSymptoms();
                 else if (text.includes('Groups')) this.showGroups();
                 else if (text.includes('Analytics')) this.showAnalytics();
-                else if (text.includes('Chats')) this.showChats();
+                else if (text.includes('Chats') && !text.includes('Private')) this.showChats();
                 else if (text.includes('Pairing')) this.showPairing();
             });
         });
@@ -643,8 +662,8 @@ class HavenWellnessApp {
         
         // Small delay to ensure DOM is ready
         setTimeout(async () => {
-            await this.loadDashboardStats();
-            await this.loadRecentActivity();
+        await this.loadDashboardStats();
+        await this.loadRecentActivity();
         }, 100);
     }
     
@@ -1191,44 +1210,103 @@ class HavenWellnessApp {
     }
     
     async loadChatsContent() {
+        console.log('loadChatsContent called - current section:', this.currentSection);
         const content = document.getElementById('dashboardContent');
         if (!content) return;
         
         // Clear any existing chat refresh intervals
         this.clearChatRefresh();
         
-        content.innerHTML = `
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="h3 mb-4" style="color: #fef3c7;">Group Chats</h2>
-                        <div id="chatsList">
-                            <div class="text-center py-5">
-                                <div class="spinner-border" role="status" style="color: #f59e0b;">
-                                    <span class="visually-hidden">Loading chats...</span>
-                                </div>
-                                <div class="mt-3" style="color: #fbbf24;">Loading your group chats...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+        content.innerHTML = Views.chats();
         
-        // Load the user's groups for chat
+        // Load both group chats and private chats
         this.loadGroupChats();
+        this.loadPrivateChats();
     }
     
     async loadGroupChats() {
+        console.log('loadGroupChats called - current section:', this.currentSection);
+        console.trace('loadGroupChats call stack');
+        
+        
         try {
             console.log('Loading group chats...');
-            const groups = await API.messages.getMyGroups();
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            const groups = await API.messages.getMyGroups(userId);
             console.log('Group chats loaded:', groups);
             this.renderGroupChats(groups);
         } catch (error) {
             console.error('Error loading group chats:', error);
             this.renderGroupChats([]);
         }
+    }
+    
+    async loadPrivateChats() {
+        try {
+            console.log('Loading private chats...');
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            const conversations = await API.privateMessages.getConversations(userId);
+            console.log('Private chats loaded:', conversations);
+            this.renderPrivateChats(conversations);
+        } catch (error) {
+            console.error('Error loading private chats:', error);
+            this.renderPrivateChats([]);
+        }
+    }
+    
+    renderPrivateChats(conversations) {
+        console.log('Rendering private chats with', conversations.length, 'conversations');
+        const privateChatsList = document.getElementById('privateChatsList');
+        if (!privateChatsList) {
+            console.error('Private chats list element not found!');
+            return;
+        }
+        
+        if (conversations.length === 0) {
+            privateChatsList.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-lock text-muted mb-3" style="font-size: 3rem; color: #8D8741 !important;"></i>
+                    <h5 style="color: #FBEEC1;">No Private Chats</h5>
+                    <p style="color: #8D8741;">Create pairings to start private conversations!</p>
+                    <button class="btn btn-primary" onclick="showSection('pairing')" 
+                            style="background: #659DBD; border-color: #659DBD;">
+                        <i class="fas fa-heart me-2"></i>Find Pairings
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        privateChatsList.innerHTML = conversations.map(conv => `
+            <div class="conversation-item p-3 border-bottom" style="border-color: rgba(255, 255, 255, 0.1) !important; cursor: pointer;" 
+                 onclick="openPrivateChat(${conv.partnerId}, '${conv.partnerName}')">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                         style="width: 40px; height: 40px; background: linear-gradient(135deg, #659DBD 0%, #8D8741 100%) !important;">
+                        <i class="fas fa-user text-white" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h6 class="mb-1" style="color: #FBEEC1;">${conv.partnerName}</h6>
+                            ${conv.unreadCount > 0 ? `
+                                <span class="badge bg-danger rounded-pill">${conv.unreadCount}</span>
+                            ` : ''}
+                        </div>
+                        <p class="mb-1 small" style="color: #8D8741;">
+                            <i class="fas fa-lock me-1"></i>Private Chat
+                        </p>
+                        ${conv.lastMessage ? `
+                            <p class="mb-0 small text-muted" style="color: #8D8741;">
+                                ${conv.lastMessage.isFromCurrentUser ? 'You: ' : ''}${conv.lastMessage.messageText.length > 30 ? 
+                                    conv.lastMessage.messageText.substring(0, 30) + '...' : conv.lastMessage.messageText}
+                            </p>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
     }
     
     renderGroupChats(groups) {
@@ -1241,51 +1319,55 @@ class HavenWellnessApp {
         
         if (groups.length === 0) {
             chatsList.innerHTML = `
-                <div class="text-center py-5">
-                    <div class="mb-3" style="font-size: 3rem; color: #f59e0b;">💬</div>
-                    <h4 style="color: #fef3c7;">No group chats yet</h4>
+            <div class="text-center py-5">
+                    <div class="mb-3" style="font-size: 3rem; color: #8D8741;">💬</div>
+                    <h4 style="color: #FBEEC1;">No group chats yet</h4>
                     <p style="color: #fbbf24;">Join a group to start chatting with other members!</p>
                     <button class="btn btn-primary" onclick="showGroups()" 
-                            style="background: #d97706; border-color: #d97706;">
+                            style="background: #659DBD; border-color: #659DBD;">
                         <i class="fas fa-users me-2"></i>Browse Groups
                     </button>
-                </div>
-            `;
+            </div>
+        `;
             return;
         }
         
         const chatsHtml = groups.map(group => `
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title mb-0" style="color: #fef3c7;">${group.groupName}</h5>
-                            <span class="badge" style="background: #d97706; color: white;">${group.userRole}</span>
-                        </div>
-                        <p class="card-text flex-grow-1" style="color: #fbbf24;">${group.groupDescription}</p>
-                        
-                        ${group.lastMessage ? `
-                            <div class="mb-3 p-2" style="background: rgba(69, 26, 3, 0.3); border-radius: 8px;">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small style="color: #a16207;">Last message from ${group.lastMessage.userName}</small>
-                                    <small style="color: #a16207;">${new Date(group.lastMessage.timestamp).toLocaleDateString()}</small>
+            <div class="col-12 mb-3">
+                <div class="card" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0" style="color: #FBEEC1;">${group.groupName}</h5>
+                                    <span class="badge" style="background: #659DBD; color: white;">${group.userRole}</span>
                                 </div>
-                                <p class="mb-0 mt-1" style="color: #fef3c7; font-size: 0.9rem;">${group.lastMessage.messageText}</p>
+                                <p class="card-text mb-2" style="color: #fbbf24;">${group.groupDescription}</p>
+                                
+                                ${group.lastMessage ? `
+                                    <div class="mb-2 p-2" style="background: rgba(69, 26, 3, 0.3); border-radius: 8px;">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small style="color: #8D8741;">Last message from ${group.lastMessage.userName}</small>
+                                            <small style="color: #8D8741;">${new Date(group.lastMessage.timestamp).toLocaleDateString()}</small>
+                                        </div>
+                                        <p class="mb-0" style="color: #FBEEC1; font-size: 0.9rem;">${group.lastMessage.messageText}</p>
+                                    </div>
+                                ` : `
+                                    <div class="mb-2 p-2" style="background: rgba(69, 26, 3, 0.3); border-radius: 8px;">
+                                        <p class="mb-0" style="color: #8D8741; font-style: italic;">No messages yet</p>
+                                    </div>
+                                `}
+                                
+                                <small class="text-muted" style="color: #8D8741;">
+                                    <i class="fas fa-users me-1"></i>${group.memberCount} members
+                                </small>
                             </div>
-                        ` : `
-                            <div class="mb-3 p-2" style="background: rgba(69, 26, 3, 0.3); border-radius: 8px;">
-                                <p class="mb-0" style="color: #a16207; font-style: italic;">No messages yet</p>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-primary" onclick="openGroupChat(${group.groupId})"
+                                        style="background: #659DBD; border-color: #659DBD;">
+                                    <i class="fas fa-comments me-2"></i>Open Chat
+                                </button>
                             </div>
-                        `}
-                        
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted" style="color: #a16207;">
-                                <i class="fas fa-users me-1"></i>${group.memberCount} members
-                            </small>
-                            <button class="btn btn-sm btn-primary" onclick="openGroupChat(${group.groupId})"
-                                    style="background: #d97706; border-color: #d97706;">
-                                <i class="fas fa-comments me-1"></i>Open Chat
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1305,6 +1387,7 @@ class HavenWellnessApp {
         const content = document.getElementById('dashboardContent');
         if (!content) return;
         
+        
         // Get group info
         const groups = await API.messages.getMyGroups();
         const group = groups.find(g => g.groupId === groupId);
@@ -1323,15 +1406,15 @@ class HavenWellnessApp {
                             <div class="card-body py-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <button class="btn btn-link me-3" onclick="loadChatsContent()" style="color: #fef3c7; text-decoration: none;">
+                                        <button class="btn btn-link me-3" onclick="loadChatsContent()" style="color: #FBEEC1; text-decoration: none;">
                                             <i class="fas fa-arrow-left"></i>
                                         </button>
                                         <div>
-                                            <h5 class="mb-0" style="color: #fef3c7;">${group.groupName}</h5>
-                                            <small style="color: #a16207;">${group.memberCount} members • You are ${group.userRole}</small>
+                                            <h5 class="mb-0" style="color: #FBEEC1;">${group.groupName}</h5>
+                                            <small style="color: #8D8741;">${group.memberCount} members • You are ${group.userRole}</small>
                                         </div>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="refreshChat()" style="border-color: #d97706; color: #d97706;">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="refreshChat()" style="border-color: #659DBD; color: #659DBD;">
                                         <i class="fas fa-sync-alt"></i> Refresh
                                     </button>
                                 </div>
@@ -1343,7 +1426,7 @@ class HavenWellnessApp {
                             <div class="card-body d-flex flex-column p-0">
                                 <div id="chatMessages" class="flex-grow-1 p-3" style="overflow-y: auto; max-height: 60vh;">
                                     <div class="text-center py-4">
-                                        <div class="spinner-border" role="status" style="color: #f59e0b;">
+                                        <div class="spinner-border" role="status" style="color: #8D8741;">
                                             <span class="visually-hidden">Loading messages...</span>
                                         </div>
                                         <div class="mt-2" style="color: #fbbf24;">Loading messages...</div>
@@ -1355,9 +1438,9 @@ class HavenWellnessApp {
                                     <form id="chatMessageForm" onsubmit="sendMessage(event)">
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." 
-                                                   style="background: rgba(255, 255, 255, 0.1); border-color: #d97706; color: #fef3c7;"
+                                                   style="background: rgba(255, 255, 255, 0.1); border-color: #659DBD; color: #FBEEC1;"
                                                    required>
-                                            <button class="btn btn-primary" type="submit" style="background: #d97706; border-color: #d97706;">
+                                            <button class="btn btn-primary" type="submit" style="background: #659DBD; border-color: #659DBD;">
                                                 <i class="fas fa-paper-plane"></i>
                                             </button>
                                         </div>
@@ -1382,7 +1465,9 @@ class HavenWellnessApp {
     async loadGroupMessages(groupId) {
         try {
             console.log('Loading messages for group:', groupId);
-            const messages = await API.messages.getGroupMessages(groupId);
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            const messages = await API.messages.getGroupMessages(groupId, userId);
             console.log('Messages loaded:', messages);
             this.renderGroupMessages(messages);
         } catch (error) {
@@ -1398,9 +1483,9 @@ class HavenWellnessApp {
         if (messages.length === 0) {
             chatMessages.innerHTML = `
                 <div class="text-center py-4">
-                    <div class="mb-3" style="font-size: 2rem; color: #f59e0b;">💬</div>
-                    <h6 style="color: #fef3c7;">No messages yet</h6>
-                    <p style="color: #a16207;">Be the first to start the conversation!</p>
+                    <div class="mb-3" style="font-size: 2rem; color: #8D8741;">💬</div>
+                    <h6 style="color: #FBEEC1;">No messages yet</h6>
+                    <p style="color: #8D8741;">Be the first to start the conversation!</p>
                 </div>
             `;
             return;
@@ -1411,14 +1496,14 @@ class HavenWellnessApp {
                 <div class="d-flex align-items-start">
                     <div class="flex-shrink-0 me-3">
                         <div class="rounded-circle d-flex align-items-center justify-content-center" 
-                             style="width: 40px; height: 40px; background: #d97706; color: white; font-weight: bold;">
+                             style="width: 40px; height: 40px; background: #659DBD; color: white; font-weight: bold;">
                             ${message.userName.charAt(0).toUpperCase()}
                         </div>
                     </div>
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="mb-0" style="color: #fef3c7;">${message.userName}</h6>
-                            <small style="color: #a16207;">${new Date(message.timestamp).toLocaleString()}</small>
+                            <h6 class="mb-0" style="color: #FBEEC1;">${message.userName}</h6>
+                            <small style="color: #8D8741;">${new Date(message.timestamp).toLocaleString()}</small>
                         </div>
                         <p class="mb-0" style="color: #fbbf24;">${message.messageText}</p>
                     </div>
@@ -1441,8 +1526,14 @@ class HavenWellnessApp {
         if (!messageText || !this.currentGroupId) return;
         
         try {
+            const user = Auth.getCurrentUser();
+            if (!user) {
+                this.showNotification('Please log in to send messages', 'error');
+                return;
+            }
+            
             console.log('Sending message:', messageText, 'to group:', this.currentGroupId);
-            await API.messages.sendGroupMessage(this.currentGroupId, messageText);
+            await API.messages.sendGroupMessage(this.currentGroupId, messageText, user.id);
             
             // Clear input
             messageInput.value = '';
@@ -1603,6 +1694,9 @@ class HavenWellnessApp {
                 interests: user.interests
             });
             
+            // Load user's group memberships for dashboard
+            this.loadDashboardUserGroups(user.id);
+            
         } catch (error) {
             console.error('Error loading user profile:', error);
         }
@@ -1624,6 +1718,8 @@ class HavenWellnessApp {
             }
             
             console.log(`Loading profile page data for: ${user.name} (attempt ${retryCount + 1})`);
+            console.log('User object:', user);
+            console.log('User ID:', user.id);
             
             // Debug: Check what's in the DOM
             const app = document.getElementById('app');
@@ -1695,11 +1791,149 @@ class HavenWellnessApp {
                 interests: user.interests
             });
             
-            console.log('✅ Profile page data loaded successfully');
-            
+               console.log('✅ Profile page data loaded successfully');
+               
+               // Load user's group memberships
+               if (user.id) {
+                   this.loadUserGroups(user.id);
+               } else {
+                   console.error('User ID is missing, cannot load groups');
+                   console.log('User object:', user);
+               }
+               
+           } catch (error) {
+               console.error('Error loading profile page data:', error);
+           }
+    }
+    
+    async loadUserGroups(userId) {
+        try {
+            console.log('Loading user groups for user:', userId);
+            const groups = await API.users.getGroups(userId);
+            console.log('User groups loaded:', groups);
+            this.renderUserGroups(groups);
         } catch (error) {
-            console.error('Error loading profile page data:', error);
+            console.error('Error loading user groups:', error);
+            this.renderUserGroups([]);
         }
+    }
+    
+    renderUserGroups(groups) {
+        const userGroupsList = document.getElementById('userGroupsList');
+        if (!userGroupsList) return;
+        
+        if (groups.length === 0) {
+            userGroupsList.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-users text-muted mb-3" style="font-size: 2.5rem; color: #8D8741 !important;"></i>
+                    <h5 style="color: #FBEEC1;">No Group Memberships</h5>
+                    <p style="color: #8D8741;">You haven't joined any groups yet. Visit the Groups section to find and join communities!</p>
+                    <button class="btn btn-primary" onclick="showDashboard(); showSection('groups')" 
+                            style="background: #659DBD; border-color: #659DBD;">
+                        <i class="fas fa-search me-2"></i>Browse Groups
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        userGroupsList.innerHTML = groups.map(group => `
+            <div class="card mb-3" style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="card-body p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 40px; height: 40px; background: linear-gradient(135deg, #659DBD 0%, #8D8741 100%) !important;">
+                                    <i class="fas fa-users text-white" style="font-size: 0.9rem;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1" style="color: #FBEEC1;">${group.groupName}</h6>
+                                    <p class="mb-0 small" style="color: #8D8741;">${group.groupDescription || 'No description'}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center flex-wrap gap-2">
+                                <span class="badge" style="background: rgba(217, 119, 6, 0.2); color: #659DBD; border: 1px solid #659DBD;">
+                                    <i class="fas fa-user-tag me-1"></i>${group.role}
+                                </span>
+                                ${group.groupCategory ? `
+                                    <span class="badge" style="background: rgba(132, 204, 22, 0.2); color: #84cc16; border: 1px solid #84cc16;">
+                                        <i class="fas fa-tag me-1"></i>${group.groupCategory}
+                                    </span>
+                                ` : ''}
+                                <small style="color: #8D8741;">
+                                    <i class="fas fa-calendar me-1"></i>Joined ${new Date(group.joinedDate).toLocaleDateString()}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-outline-primary btn-sm" onclick="showDashboard(); showSection('groups')"
+                                    style="border-color: #659DBD; color: #659DBD;">
+                                <i class="fas fa-external-link-alt me-1"></i>View Group
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    async loadDashboardUserGroups(userId) {
+        try {
+            console.log('Loading dashboard user groups for user:', userId);
+            const groups = await API.users.getGroups(userId);
+            console.log('Dashboard user groups loaded:', groups);
+            this.renderDashboardUserGroups(groups);
+        } catch (error) {
+            console.error('Error loading dashboard user groups:', error);
+            this.renderDashboardUserGroups([]);
+        }
+    }
+    
+    renderDashboardUserGroups(groups) {
+        const dashboardUserGroupsList = document.getElementById('dashboardUserGroupsList');
+        if (!dashboardUserGroupsList) return;
+        
+        if (groups.length === 0) {
+            dashboardUserGroupsList.innerHTML = `
+                <div class="text-center py-3">
+                    <i class="fas fa-users text-muted mb-2" style="font-size: 2rem; color: #8D8741 !important;"></i>
+                    <h6 style="color: #FBEEC1;">No Group Memberships</h6>
+                    <p class="small mb-2" style="color: #8D8741;">You haven't joined any groups yet.</p>
+                    <button class="btn btn-primary btn-sm" onclick="showSection('groups')" 
+                            style="background: #659DBD; border-color: #659DBD;">
+                        <i class="fas fa-search me-1"></i>Browse Groups
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        dashboardUserGroupsList.innerHTML = groups.map(group => `
+            <div class="d-flex align-items-center justify-content-between p-3 mb-2" style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                         style="width: 35px; height: 35px; background: linear-gradient(135deg, #659DBD 0%, #8D8741 100%) !important;">
+                        <i class="fas fa-users text-white" style="font-size: 0.8rem;"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-1" style="color: #FBEEC1;">${group.groupName}</h6>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge" style="background: rgba(217, 119, 6, 0.2); color: #659DBD; border: 1px solid #659DBD; font-size: 0.7rem;">
+                                ${group.role}
+                            </span>
+                            <small style="color: #8D8741;">
+                                Joined ${new Date(group.joinedDate).toLocaleDateString()}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-outline-primary btn-sm" onclick="showSection('groups')"
+                        style="border-color: #659DBD; color: #659DBD; font-size: 0.8rem;">
+                    <i class="fas fa-external-link-alt"></i>
+                </button>
+            </div>
+        `).join('');
     }
     
     setupProfilePageForm() {
@@ -1840,13 +2074,507 @@ class HavenWellnessApp {
     
     async loadPairingContent() {
         const content = document.getElementById('dashboardContent');
-        content.innerHTML = `
+        content.innerHTML = Views.pairing();
+        
+        // Load pairing data after a short delay to ensure DOM is ready
+        setTimeout(() => {
+            this.loadMyPairings();
+            this.loadPairingGroups();
+            this.setupPairingEventListeners();
+        }, 100);
+    }
+    
+    async loadMyPairings() {
+        try {
+            console.log('Loading my pairings...');
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            const pairings = await API.pairings.getMyPairings(userId);
+            console.log('Pairings loaded:', pairings);
+            this.renderMyPairings(pairings);
+        } catch (error) {
+            console.error('Error loading pairings:', error);
+            this.renderMyPairings([]);
+        }
+    }
+    
+    renderMyPairings(pairings) {
+        const pairingsList = document.getElementById('pairingsList');
+        if (!pairingsList) return;
+        
+        if (pairings.length === 0) {
+            pairingsList.innerHTML = `
             <div class="text-center py-5">
-                <div class="display-4 mb-3">🤝</div>
-                <h3>Peer Pairing</h3>
-                <p class="text-muted">Pairing section coming soon!</p>
+                    <i class="fas fa-heart text-muted mb-3" style="font-size: 3rem; color: #8D8741 !important;"></i>
+                    <h5 style="color: #FBEEC1;">No Pairings Yet</h5>
+                    <p style="color: #8D8741;">You haven't been paired with anyone yet. Check the "Find Pairing" tab to connect with others!</p>
             </div>
         `;
+            return;
+        }
+        
+        pairingsList.innerHTML = pairings.map(pairing => `
+            <div class="card mb-3" style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 50px; height: 50px; background: linear-gradient(135deg, #659DBD 0%, #8D8741 100%) !important;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1" style="color: #FBEEC1;">${pairing.partnerName}</h5>
+                                    <p class="mb-0" style="color: #8D8741;">${pairing.partnerEmail}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="badge me-2" style="background: rgba(217, 119, 6, 0.2); color: #659DBD; border: 1px solid #659DBD;">
+                                    <i class="fas fa-users me-1"></i>${pairing.groupName}
+                                </span>
+                                <small style="color: #8D8741;">
+                                    <i class="fas fa-calendar me-1"></i>Paired ${new Date(pairing.createdDate).toLocaleDateString()}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-outline-danger btn-sm" onclick="removePairing(${pairing.id})"
+                                    style="border-color: #dc3545; color: #dc3545;">
+                                <i class="fas fa-times me-1"></i>Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    async loadPairingGroups() {
+        try {
+            console.log('Loading groups for pairing...');
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            
+            const groups = await API.groups.list(userId);
+            console.log('Groups loaded for pairing:', groups);
+            
+            // Filter to only show groups where user is a member
+            const userGroups = groups.filter(group => group.isMember);
+            this.populatePairingGroupFilter(userGroups);
+        } catch (error) {
+            console.error('Error loading groups for pairing:', error);
+            this.populatePairingGroupFilter([]);
+        }
+    }
+    
+    populatePairingGroupFilter(groups) {
+        const groupFilter = document.getElementById('pairingGroupFilter');
+        if (!groupFilter) return;
+        
+        // Clear existing options except the first one
+        groupFilter.innerHTML = '<option value="">Select a group...</option>';
+        
+        groups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.groupName;
+            groupFilter.appendChild(option);
+        });
+    }
+    
+    setupPairingEventListeners() {
+        // Group filter change event
+        const groupFilter = document.getElementById('pairingGroupFilter');
+        if (groupFilter) {
+            groupFilter.addEventListener('change', (event) => {
+                const groupId = event.target.value;
+                if (groupId) {
+                    this.loadAvailableUsers(parseInt(groupId));
+                } else {
+                    this.clearAvailableUsers();
+                }
+            });
+        }
+    }
+    
+    async loadAvailableUsers(groupId) {
+        try {
+            console.log('Loading available users for group:', groupId);
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            const users = await API.pairings.getAvailableUsers(groupId, userId);
+            console.log('Available users loaded:', users);
+            this.renderAvailableUsers(users);
+        } catch (error) {
+            console.error('Error loading available users:', error);
+            this.renderAvailableUsers([]);
+        }
+    }
+    
+    renderAvailableUsers(users) {
+        const availableUsersList = document.getElementById('availableUsersList');
+        if (!availableUsersList) return;
+        
+        if (users.length === 0) {
+            availableUsersList.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-users text-muted mb-3" style="font-size: 3rem; color: #8D8741 !important;"></i>
+                    <h5 style="color: #FBEEC1;">No Users Available</h5>
+                    <p style="color: #8D8741;">There are no other users in this group available for pairing.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        availableUsersList.innerHTML = users.map(user => `
+            <div class="card mb-3" style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 50px; height: 50px; background: linear-gradient(135deg, #659DBD 0%, #8D8741 100%) !important;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1" style="color: #FBEEC1;">${user.name}</h5>
+                                    <p class="mb-0" style="color: #8D8741;">${user.email}</p>
+                                </div>
+                            </div>
+                            <small style="color: #8D8741;">
+                                <i class="fas fa-calendar me-1"></i>Joined ${new Date(user.joinedDate).toLocaleDateString()}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-primary btn-sm" onclick="createPairing(${user.userId})"
+                                    style="background: #659DBD; border-color: #659DBD;">
+                                <i class="fas fa-heart me-1"></i>Pair Up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    clearAvailableUsers() {
+        const availableUsersList = document.getElementById('availableUsersList');
+        if (availableUsersList) {
+            availableUsersList.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-users text-muted mb-3" style="font-size: 3rem; color: #8D8741 !important;"></i>
+                    <p class="mb-0" style="color: #8D8741;">Select a group to see available users for pairing</p>
+                </div>
+            `;
+        }
+    }
+    
+    async createPairing(targetUserId) {
+        const groupFilter = document.getElementById('pairingGroupFilter');
+        if (!groupFilter || !groupFilter.value) {
+            this.showNotification('Please select a group first', 'error');
+            return;
+        }
+        
+        const groupId = parseInt(groupFilter.value);
+        const user = Auth.getCurrentUser();
+        if (!user) {
+            this.showNotification('Please log in to create pairings', 'error');
+            return;
+        }
+        
+        try {
+            console.log('Creating pairing with user:', targetUserId, 'in group:', groupId);
+            const pairing = await API.pairings.createPairing(groupId, targetUserId, user.id);
+            console.log('Pairing created:', pairing);
+            
+            this.showNotification('Successfully paired!', 'success');
+            
+            // Refresh the pairings list
+            this.loadMyPairings();
+            
+            // Refresh available users
+            this.loadAvailableUsers(groupId);
+            
+        } catch (error) {
+            console.error('Error creating pairing:', error);
+            this.showNotification('Failed to create pairing. Please try again.', 'error');
+        }
+    }
+    
+    async removePairing(pairingId) {
+        if (!confirm('Are you sure you want to remove this pairing?')) {
+            return;
+        }
+        
+        const user = Auth.getCurrentUser();
+        if (!user) {
+            this.showNotification('Please log in to remove pairings', 'error');
+            return;
+        }
+        
+        try {
+            console.log('Removing pairing:', pairingId);
+            await API.pairings.removePairing(pairingId, user.id);
+            console.log('Pairing removed successfully');
+            
+            this.showNotification('Pairing removed successfully', 'success');
+            
+            // Refresh the pairings list and private chats
+            this.loadMyPairings();
+            
+            
+        } catch (error) {
+            console.error('Error removing pairing:', error);
+            this.showNotification('Failed to remove pairing. Please try again.', 'error');
+        }
+    }
+    
+    // Create Chat Modal Functions
+    async showCreateChatModal() {
+        const modal = new bootstrap.Modal(document.getElementById('createChatModal'));
+        modal.show();
+        
+        // Load paired users
+        await this.loadPairedUsers();
+    }
+    
+    async loadPairedUsers() {
+        try {
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            const pairings = await API.pairings.getMyPairings(userId);
+            
+            const pairedUsersList = document.getElementById('pairedUsersList');
+            if (!pairedUsersList) return;
+            
+            if (pairings.length === 0) {
+                pairedUsersList.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-heart text-muted mb-3" style="font-size: 2rem; color: #8D8741 !important;"></i>
+                        <h6 style="color: #FBEEC1;">No Pairings Yet</h6>
+                        <p style="color: #8D8741;">Create pairings first to start private chats!</p>
+                        <button class="btn btn-primary btn-sm" onclick="showSection('pairing')" 
+                                style="background: #659DBD; border-color: #659DBD;">
+                            <i class="fas fa-heart me-1"></i>Find Pairings
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            pairedUsersList.innerHTML = pairings.map(pairing => `
+                <div class="card mb-2" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;" 
+                     onclick="createPrivateChat(${pairing.partnerId}, '${pairing.partnerName}')">
+                    <div class="card-body py-2">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 35px; height: 35px; background: linear-gradient(135deg, #659DBD 0%, #8D8741 100%) !important;">
+                                <i class="fas fa-user text-white" style="font-size: 0.8rem;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0" style="color: #FBEEC1;">${pairing.partnerName}</h6>
+                                <small style="color: #8D8741;">${pairing.groupName}</small>
+                            </div>
+                            <i class="fas fa-chevron-right" style="color: #8D8741;"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading paired users:', error);
+            const pairedUsersList = document.getElementById('pairedUsersList');
+            if (pairedUsersList) {
+                pairedUsersList.innerHTML = `
+                    <div class="text-center py-4">
+                        <p style="color: #dc3545;">Error loading paired users. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    async createPrivateChat(partnerId, partnerName) {
+        try {
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createChatModal'));
+            if (modal) modal.hide();
+            
+            // Open private chat interface
+            this.openPrivateChat(partnerId, partnerName);
+        } catch (error) {
+            console.error('Error creating private chat:', error);
+            this.showNotification('Failed to create private chat. Please try again.', 'error');
+        }
+    }
+    
+    async openPrivateChat(partnerId, partnerName) {
+        console.log('Opening private chat with:', partnerName);
+        
+        // Update the main content to show private chat interface
+        const content = document.getElementById('dashboardContent');
+        if (!content) return;
+        
+        content.innerHTML = `
+            <div class="container-fluid h-100">
+                <div class="row h-100">
+                    <div class="col-12 d-flex flex-column" style="height: 80vh;">
+                        <!-- Chat Header -->
+                        <div class="card mb-3" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="card-body py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <button class="btn btn-link me-3" onclick="loadChatsContent()" style="color: #FBEEC1; text-decoration: none;">
+                                            <i class="fas fa-arrow-left"></i>
+                                        </button>
+                                        <div>
+                                            <h5 class="mb-0" style="color: #FBEEC1;">
+                                                <i class="fas fa-lock me-2"></i>${partnerName}
+                                            </h5>
+                                            <small style="color: #8D8741;">Private Chat</small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="refreshPrivateChat()" style="border-color: #659DBD; color: #659DBD;">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Messages -->
+                        <div class="card flex-grow-1" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="card-body d-flex flex-column p-0" style="height: 100%;">
+                                <!-- Messages Area -->
+                                <div id="privateChatMessages" class="flex-grow-1 p-3" style="overflow-y: auto; max-height: 500px;">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status" style="color: #659DBD !important;">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-3 mb-0" style="color: #8D8741;">Loading messages...</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Message Input -->
+                                <div class="border-top p-3" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                                    <form id="privateMessageForm" onsubmit="sendPrivateMessage(event)">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="privateMessageInput" placeholder="Type your message..." 
+                                                   style="background: rgba(255, 255, 255, 0.1); border-color: #659DBD; color: #FBEEC1;"
+                                                   autocomplete="off">
+                                            <button class="btn btn-primary" type="submit" 
+                                                    style="background: #659DBD; border-color: #659DBD;">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Store current chat partner
+        this.currentChatPartner = partnerId;
+        
+        // Load messages
+        await this.loadPrivateMessages(partnerId);
+        
+        // Set up auto-refresh
+        this.clearPrivateChatRefresh();
+        this.privateChatRefreshInterval = setInterval(() => {
+            this.loadPrivateMessages(partnerId);
+        }, 3000);
+    }
+    
+    async loadPrivateMessages(partnerId) {
+        try {
+            console.log('Loading private messages for partner:', partnerId);
+            const user = Auth.getCurrentUser();
+            const userId = user ? user.id : null;
+            const messages = await API.privateMessages.getConversation(partnerId, userId);
+            console.log('Private messages loaded:', messages);
+            this.renderPrivateMessages(messages);
+        } catch (error) {
+            console.error('Error loading private messages:', error);
+            this.renderPrivateMessages([]);
+        }
+    }
+    
+    renderPrivateMessages(messages) {
+        const messagesContainer = document.getElementById('privateChatMessages');
+        if (!messagesContainer) return;
+        
+        if (messages.length === 0) {
+            messagesContainer.innerHTML = `
+                <div class="text-center py-4">
+                    <p style="color: #8D8741;">No messages yet. Start the conversation!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        messagesContainer.innerHTML = messages.map(message => `
+            <div class="d-flex ${message.isFromCurrentUser ? 'justify-content-end' : 'justify-content-start'} mb-3">
+                <div class="message ${message.isFromCurrentUser ? 'own' : 'other'}" 
+                     style="max-width: 70%; padding: 12px 16px; border-radius: 18px; ${message.isFromCurrentUser ? 
+                        'background: linear-gradient(135deg, #659DBD 0%, #8D8741 100%); color: white;' : 
+                        'background: rgba(255, 255, 255, 0.1); color: #FBEEC1;'}">
+                    <div class="message-text">${message.messageText}</div>
+                    <div class="message-time small mt-1" style="opacity: 0.7;">
+                        ${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    async sendPrivateMessage(event) {
+        event.preventDefault();
+        
+        const messageInput = document.getElementById('privateMessageInput');
+        const messageText = messageInput.value.trim();
+        
+        if (!messageText || !this.currentChatPartner) return;
+        
+        try {
+            const user = Auth.getCurrentUser();
+            if (!user) {
+                this.showNotification('Please log in to send messages', 'error');
+                return;
+            }
+            
+            console.log('Sending private message:', messageText, 'to partner:', this.currentChatPartner);
+            await API.privateMessages.sendMessage(this.currentChatPartner, messageText, user.id);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Refresh messages
+            this.loadPrivateMessages(this.currentChatPartner);
+            
+            this.showNotification('Message sent!', 'success');
+        } catch (error) {
+            console.error('Error sending private message:', error);
+            this.showNotification('Failed to send message. Please try again.', 'error');
+        }
+    }
+    
+    clearPrivateChatRefresh() {
+        if (this.privateChatRefreshInterval) {
+            clearInterval(this.privateChatRefreshInterval);
+            this.privateChatRefreshInterval = null;
+        }
+    }
+    
+    async refreshPrivateChat() {
+        if (this.currentChatPartner) {
+            await this.loadPrivateMessages(this.currentChatPartner);
+        }
     }
     
     // Utility Methods
@@ -2063,6 +2791,64 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('HavenWellnessApp or showDashboard not available');
         }
     };
+    
+    // Pairing global functions
+    window.createPairing = (targetUserId) => {
+        if (window.HavenWellnessApp && window.HavenWellnessApp.createPairing) {
+            window.HavenWellnessApp.createPairing(targetUserId);
+        } else {
+            console.error('HavenWellnessApp or createPairing not available');
+        }
+    };
+    
+    window.removePairing = (pairingId) => {
+        if (window.HavenWellnessApp && window.HavenWellnessApp.removePairing) {
+            window.HavenWellnessApp.removePairing(pairingId);
+        } else {
+            console.error('HavenWellnessApp or removePairing not available');
+        }
+    };
+    
+    window.showCreateChatModal = () => {
+        if (window.HavenWellnessApp && window.HavenWellnessApp.showCreateChatModal) {
+            window.HavenWellnessApp.showCreateChatModal();
+        } else {
+            console.error('HavenWellnessApp or showCreateChatModal not available');
+        }
+    };
+    
+    window.createPrivateChat = (partnerId, partnerName) => {
+        if (window.HavenWellnessApp && window.HavenWellnessApp.createPrivateChat) {
+            window.HavenWellnessApp.createPrivateChat(partnerId, partnerName);
+        } else {
+            console.error('HavenWellnessApp or createPrivateChat not available');
+        }
+    };
+    
+    window.openPrivateChat = (partnerId, partnerName) => {
+        if (window.HavenWellnessApp && window.HavenWellnessApp.openPrivateChat) {
+            window.HavenWellnessApp.openPrivateChat(partnerId, partnerName);
+        } else {
+            console.error('HavenWellnessApp or openPrivateChat not available');
+        }
+    };
+    
+    window.sendPrivateMessage = (event) => {
+        if (window.HavenWellnessApp && window.HavenWellnessApp.sendPrivateMessage) {
+            window.HavenWellnessApp.sendPrivateMessage(event);
+        } else {
+            console.error('HavenWellnessApp or sendPrivateMessage not available');
+        }
+    };
+    
+    window.refreshPrivateChat = () => {
+        if (window.HavenWellnessApp && window.HavenWellnessApp.refreshPrivateChat) {
+            window.HavenWellnessApp.refreshPrivateChat();
+        } else {
+            console.error('HavenWellnessApp or refreshPrivateChat not available');
+        }
+    };
+    
     
     window.changeProfilePicture = () => {
         // Placeholder for profile picture change functionality

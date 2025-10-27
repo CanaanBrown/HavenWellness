@@ -3,6 +3,7 @@ using System;
 using HavenWellness.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HavenWellness.Migrations
 {
     [DbContext(typeof(WellnessContext))]
-    partial class WellnessContextModelSnapshot : ModelSnapshot
+    [Migration("20251027045339_AddPrivateMessageModel")]
+    partial class AddPrivateMessageModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -55,7 +58,7 @@ namespace HavenWellness.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 10, 27, 5, 2, 55, 555, DateTimeKind.Utc).AddTicks(38),
+                            CreatedDate = new DateTime(2025, 10, 27, 4, 53, 39, 336, DateTimeKind.Utc).AddTicks(9516),
                             Description = "A supportive community for students managing chronic health conditions",
                             GroupName = "Chronic Illness Support",
                             IsPrivate = false
@@ -134,19 +137,15 @@ namespace HavenWellness.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("IsActive");
-
                     b.HasIndex("User1Id");
 
                     b.HasIndex("User2Id");
 
-                    b.HasIndex("GroupId", "User1Id", "IsActive")
-                        .IsUnique()
-                        .HasFilter("IsActive = 1");
+                    b.HasIndex("GroupId", "User1Id")
+                        .IsUnique();
 
-                    b.HasIndex("GroupId", "User2Id", "IsActive")
-                        .IsUnique()
-                        .HasFilter("IsActive = 1");
+                    b.HasIndex("GroupId", "User2Id")
+                        .IsUnique();
 
                     b.ToTable("Pairings");
                 });
@@ -359,7 +358,7 @@ namespace HavenWellness.Migrations
                         {
                             Id = 1,
                             GroupId = 1,
-                            JoinedDate = new DateTime(2025, 10, 27, 5, 2, 55, 555, DateTimeKind.Utc).AddTicks(54),
+                            JoinedDate = new DateTime(2025, 10, 27, 4, 53, 39, 336, DateTimeKind.Utc).AddTicks(9539),
                             Role = "Member",
                             UserId = 1
                         });

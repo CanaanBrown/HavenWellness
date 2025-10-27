@@ -6,6 +6,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HavenWellness.Controllers;
 
+public class JoinGroupRequest
+{
+    public int UserId { get; set; }
+}
+
+public class LeaveGroupRequest
+{
+    public int UserId { get; set; }
+}
+
 /// <summary>
 /// Controller for managing groups
 /// </summary>
@@ -26,9 +36,13 @@ public class GroupsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<object>>> GetGroups()
     {
-        // For now, use a default user ID of 1 since we don't have authentication yet
-        // In a real app, you'd get this from the authenticated user's context
-        var userId = 1; // TODO: Get from authenticated user context
+        // Get user ID from query parameter or default to null (no user context)
+        var userIdParam = Request.Query["userId"].FirstOrDefault();
+        int? userId = null;
+        if (!string.IsNullOrEmpty(userIdParam) && int.TryParse(userIdParam, out var parsedUserId))
+        {
+            userId = parsedUserId;
+        }
 
         var groups = await _context.Groups
             .OrderByDescending(g => g.CreatedDate)
@@ -41,11 +55,11 @@ public class GroupsController : ControllerBase
                 g.IsPrivate,
                 g.CreatedDate,
                 memberCount = g.UserGroups.Count,
-                isMember = g.UserGroups.Any(ug => ug.UserId == userId),
-                userRole = g.UserGroups
-                    .Where(ug => ug.UserId == userId)
+                isMember = userId.HasValue ? g.UserGroups.Any(ug => ug.UserId == userId.Value) : false,
+                userRole = userId.HasValue ? g.UserGroups
+                    .Where(ug => ug.UserId == userId.Value)
                     .Select(ug => ug.Role)
-                    .FirstOrDefault()
+                    .FirstOrDefault() : null
             })
             .ToListAsync();
 
@@ -188,7 +202,7 @@ public class GroupsController : ControllerBase
     /// <param name="groupId">The ID of the group to join</param>
     /// <returns>Success message</returns>
     [HttpPost("{groupId}/join")]
-    public async Task<ActionResult<object>> JoinGroup(int groupId)
+    public async Task<ActionResult<object>> JoinGroup(int groupId, [FromBody] JoinGroupRequest? request = null)
     {
         // Check if group exists
         var group = await _context.Groups.FindAsync(groupId);
@@ -197,9 +211,8 @@ public class GroupsController : ControllerBase
             return NotFound("Group not found");
         }
 
-        // For now, use a default user ID of 1 since we don't have authentication yet
-        // In a real app, you'd get this from the authenticated user's context
-        var userId = 1; // TODO: Get from authenticated user context
+        // Get user ID from request body or default to 1 for backward compatibility
+        var userId = request?.UserId ?? 1;
 
         // Check if user is already a member
         var existingMembership = await _context.UserGroups
@@ -231,11 +244,10 @@ public class GroupsController : ControllerBase
     /// <param name="groupId">The ID of the group to leave</param>
     /// <returns>Success message</returns>
     [HttpPost("{groupId}/leave")]
-    public async Task<ActionResult<object>> LeaveGroup(int groupId)
+    public async Task<ActionResult<object>> LeaveGroup(int groupId, [FromBody] LeaveGroupRequest? request = null)
     {
-        // For now, use a default user ID of 1 since we don't have authentication yet
-        // In a real app, you'd get this from the authenticated user's context
-        var userId = 1; // TODO: Get from authenticated user context
+        // Get user ID from request body or default to 1 for backward compatibility
+        var userId = request?.UserId ?? 1;
 
         // Find the user's membership
         var membership = await _context.UserGroups

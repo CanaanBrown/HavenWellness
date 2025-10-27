@@ -64,14 +64,14 @@
                 HTTP 204 No Content
             </remarks>
         </member>
-        <member name="M:HavenWellness.Controllers.GroupsController.JoinGroup(System.Int32)">
+        <member name="M:HavenWellness.Controllers.GroupsController.JoinGroup(System.Int32,HavenWellness.Controllers.JoinGroupRequest)">
             <summary>
             Join a group
             </summary>
             <param name="groupId">The ID of the group to join</param>
             <returns>Success message</returns>
         </member>
-        <member name="M:HavenWellness.Controllers.GroupsController.LeaveGroup(System.Int32)">
+        <member name="M:HavenWellness.Controllers.GroupsController.LeaveGroup(System.Int32,HavenWellness.Controllers.LeaveGroupRequest)">
             <summary>
             Leave a group
             </summary>
@@ -100,11 +100,12 @@
             Controller for managing group messages and chat functionality
             </summary>
         </member>
-        <member name="M:HavenWellness.Controllers.MessagesController.GetGroupMessages(System.Int32)">
+        <member name="M:HavenWellness.Controllers.MessagesController.GetGroupMessages(System.Int32,System.Nullable{System.Int32})">
             <summary>
             Get all messages for a specific group
             </summary>
             <param name="groupId">The ID of the group</param>
+            <param name="userId">The ID of the user requesting messages</param>
             <returns>List of messages for the group</returns>
         </member>
         <member name="M:HavenWellness.Controllers.MessagesController.SendGroupMessage(System.Int32,HavenWellness.Controllers.SendMessageRequest)">
@@ -115,15 +116,76 @@
             <param name="request">The message request</param>
             <returns>The created message</returns>
         </member>
-        <member name="M:HavenWellness.Controllers.MessagesController.GetMyGroups">
+        <member name="M:HavenWellness.Controllers.MessagesController.GetMyGroups(System.Nullable{System.Int32})">
             <summary>
             Get all groups that the current user is a member of (for chat list)
             </summary>
+            <param name="userId">The ID of the user</param>
             <returns>List of groups with recent message info</returns>
         </member>
         <member name="T:HavenWellness.Controllers.SendMessageRequest">
             <summary>
             Request model for sending a message
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Controllers.PairingController">
+            <summary>
+            Controller for managing user pairings within groups
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.PairingController.GetMyPairings(System.Nullable{System.Int32})">
+            <summary>
+            Get all pairings for the current user
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.PairingController.GetAvailableUsers(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Get available users for pairing in a specific group
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.PairingController.CreatePairing(HavenWellness.Controllers.CreatePairingRequest)">
+            <summary>
+            Create a new pairing between two users in a group
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.PairingController.RemovePairing(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Remove a pairing
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Controllers.CreatePairingRequest">
+            <summary>
+            Request model for creating a pairing
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Controllers.PrivateMessagesController">
+            <summary>
+            Controller for managing private messages between paired users
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.PrivateMessagesController.GetConversations(System.Nullable{System.Int32})">
+            <summary>
+            Get all private conversations for the current user
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.PrivateMessagesController.GetConversation(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Get messages between the current user and a specific partner
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.PrivateMessagesController.SendMessage(HavenWellness.Controllers.SendPrivateMessageRequest)">
+            <summary>
+            Send a private message to a paired user
+            </summary>
+        </member>
+        <member name="M:HavenWellness.Controllers.PrivateMessagesController.MarkAsRead(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Mark a message as read
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Controllers.SendPrivateMessageRequest">
+            <summary>
+            Request model for sending a private message
             </summary>
         </member>
         <member name="T:HavenWellness.Controllers.SymptomsController">
@@ -341,6 +403,13 @@
                 HTTP 204 No Content
             </remarks>
         </member>
+        <member name="M:HavenWellness.Controllers.UsersController.GetUserGroups(System.Int32)">
+            <summary>
+            Get user's group memberships
+            </summary>
+            <param name="id">The user ID</param>
+            <returns>List of groups the user is a member of</returns>
+        </member>
         <member name="M:HavenWellness.Controllers.UsersController.DeleteUser(System.Int32)">
             <summary>
             Delete a user
@@ -387,9 +456,55 @@
         <member name="M:HavenWellness.Migrations.AddUserGroupRoleAndJoinedDate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:HavenWellness.Migrations.AddPairingModel">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddPairingModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddPairingModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddPairingModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:HavenWellness.Migrations.AddPrivateMessageModel">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddPrivateMessageModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddPrivateMessageModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddPrivateMessageModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:HavenWellness.Migrations.FixPairingUniqueConstraints">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.FixPairingUniqueConstraints.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.FixPairingUniqueConstraints.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.FixPairingUniqueConstraints.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:HavenWellness.Models.Group">
             <summary>
             Represents a support group for users with chronic illnesses
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Models.Pairing">
+            <summary>
+            Represents a pairing between two users in a specific group
+            </summary>
+        </member>
+        <member name="T:HavenWellness.Models.PrivateMessage">
+            <summary>
+            Represents a private message between two paired users
             </summary>
         </member>
         <member name="T:HavenWellness.Models.User">

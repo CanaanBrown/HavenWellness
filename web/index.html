@@ -21,28 +21,28 @@
     
     <style>
         :root {
-            --primary-color: #d97706;
-            --primary-dark: #b45309;
-            --primary-light: #f59e0b;
-            --secondary-color: #fbbf24;
-            --accent-color: #84cc16;
-            --accent-dark: #65a30d;
-            --warm-neutral: #fef7ed;
-            --cool-neutral: #fef3c7;
-            --text-dark: #451a03;
-            --text-muted: #92400e;
-            --text-light: #a16207;
+            --primary-color: #659DBD;
+            --primary-dark: #4A7A9A;
+            --primary-light: #7BB3D3;
+            --secondary-color: #8D8741;
+            --accent-color: #DAAD86;
+            --accent-dark: #BC986A;
+            --warm-neutral: #FBEEC1;
+            --cool-neutral: #FBEEC1;
+            --text-dark: #2C3E50;
+            --text-muted: #5D6D7E;
+            --text-light: #8D8741;
         }
         
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);
-            color: #fef3c7;
+            background: linear-gradient(135deg, #2C3E50 0%, #5D6D7E 50%, #8D8741 100%);
+            color: #FBEEC1;
             min-height: 100vh;
         }
         
         .hero-gradient {
-            background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%);
+            background: linear-gradient(135deg, #659DBD 0%, #8D8741 50%, #DAAD86 100%);
             min-height: 40vh;
         }
         
@@ -66,7 +66,7 @@
         
         .main-content {
             flex: 1;
-            background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);
+            background: linear-gradient(135deg, #2C3E50 0%, #5D6D7E 50%, #8D8741 100%);
             min-height: 100vh;
         }
         
@@ -141,6 +141,25 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             color: #fef3c7;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Dropdown and select styling for better readability */
+        .form-select option {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        
+        .dropdown-menu {
+            background-color: #ffffff !important;
+        }
+        
+        .dropdown-item {
+            color: #000000 !important;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa !important;
+            color: #000000 !important;
         }
         
         .chat-message.own {
@@ -310,7 +329,7 @@
     <script src="./js/api.js?v=1"></script>
     <script src="./js/auth.js?v=1"></script>
     <script src="./js/views.js?v=1"></script>
-    <script src="./js/app.js?v=1"></script>
+    <script src="./js/app.js?v=8"></script>
     <script src="./js/symptoms.js?v=1"></script>
     <script src="./js/groups.js?v=1"></script>
     <script src="./js/analytics.js?v=1"></script>
@@ -348,7 +367,7 @@
                 particle.style.height = size + 'px';
                 
                 // Random colors from our theme
-                const colors = ['#d97706', '#f59e0b', '#fbbf24'];
+                const colors = ['#659DBD', '#8D8741', '#DAAD86'];
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 particle.style.background = randomColor;
                 
@@ -501,7 +520,7 @@
                     
                     this.ctx.beginPath();
                     this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                    this.ctx.fillStyle = `rgba(217, 119, 6, ${particle.opacity})`;
+                    this.ctx.fillStyle = `rgba(101, 157, 189, ${particle.opacity})`;
                     this.ctx.fill();
                 });
                 

@@ -24,9 +24,10 @@ public class MessagesController : ControllerBase
     /// Get all messages for a specific group
     /// </summary>
     /// <param name="groupId">The ID of the group</param>
+    /// <param name="userId">The ID of the user requesting messages</param>
     /// <returns>List of messages for the group</returns>
     [HttpGet("group/{groupId}")]
-    public async Task<ActionResult<IEnumerable<object>>> GetGroupMessages(int groupId)
+    public async Task<ActionResult<IEnumerable<object>>> GetGroupMessages(int groupId, [FromQuery] int? userId = null)
     {
         // Check if group exists
         var group = await _context.Groups.FindAsync(groupId);
@@ -35,13 +36,12 @@ public class MessagesController : ControllerBase
             return NotFound("Group not found");
         }
 
-        // For now, use a default user ID of 1 since we don't have authentication yet
-        // In a real app, you'd get this from the authenticated user's context
-        var userId = 1; // TODO: Get from authenticated user context
+        // Get user ID from query parameter or default to 1 for backward compatibility
+        var currentUserId = userId ?? 1;
 
         // Check if user is a member of the group
         var isMember = await _context.UserGroups
-            .AnyAsync(ug => ug.UserId == userId && ug.GroupId == groupId);
+            .AnyAsync(ug => ug.UserId == currentUserId && ug.GroupId == groupId);
 
         if (!isMember)
         {
@@ -87,9 +87,8 @@ public class MessagesController : ControllerBase
             return NotFound("Group not found");
         }
 
-        // For now, use a default user ID of 1 since we don't have authentication yet
-        // In a real app, you'd get this from the authenticated user's context
-        var userId = 1; // TODO: Get from authenticated user context
+        // Get user ID from request body or default to 1 for backward compatibility
+        var userId = request.UserId ?? 1;
 
         // Check if user is a member of the group
         var isMember = await _context.UserGroups
@@ -130,16 +129,16 @@ public class MessagesController : ControllerBase
     /// <summary>
     /// Get all groups that the current user is a member of (for chat list)
     /// </summary>
+    /// <param name="userId">The ID of the user</param>
     /// <returns>List of groups with recent message info</returns>
     [HttpGet("my-groups")]
-    public async Task<ActionResult<IEnumerable<object>>> GetMyGroups()
+    public async Task<ActionResult<IEnumerable<object>>> GetMyGroups([FromQuery] int? userId = null)
     {
-        // For now, use a default user ID of 1 since we don't have authentication yet
-        // In a real app, you'd get this from the authenticated user's context
-        var userId = 1; // TODO: Get from authenticated user context
+        // Get user ID from query parameter or default to 1 for backward compatibility
+        var currentUserId = userId ?? 1;
 
         var groups = await _context.UserGroups
-            .Where(ug => ug.UserId == userId)
+            .Where(ug => ug.UserId == currentUserId)
             .Include(ug => ug.Group)
             .ThenInclude(g => g.GroupMessages.OrderByDescending(gm => gm.Timestamp).Take(1))
             .Select(ug => new
@@ -173,4 +172,6 @@ public class SendMessageRequest
     [Required]
     [StringLength(1000, MinimumLength = 1)]
     public string MessageText { get; set; } = string.Empty;
+    
+    public int? UserId { get; set; }
 }

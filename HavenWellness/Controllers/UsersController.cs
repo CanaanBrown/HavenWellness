@@ -152,6 +152,40 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    /// Get user's group memberships
+    /// </summary>
+    /// <param name="id">The user ID</param>
+    /// <returns>List of groups the user is a member of</returns>
+    [HttpGet("{id}/groups")]
+    public async Task<ActionResult<IEnumerable<object>>> GetUserGroups(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
+        var userGroups = await _context.UserGroups
+            .Where(ug => ug.UserId == id)
+            .Include(ug => ug.Group)
+            .Select(ug => new
+            {
+                ug.GroupId,
+                GroupName = ug.Group!.GroupName,
+                ug.Role,
+                ug.JoinedDate,
+                GroupDescription = ug.Group.Description,
+                GroupCategory = ug.Group.Category,
+                GroupTags = ug.Group.Tags,
+                GroupIsPrivate = ug.Group.IsPrivate
+            })
+            .OrderBy(ug => ug.GroupName)
+            .ToListAsync();
+
+        return Ok(userGroups);
+    }
+
+    /// <summary>
     /// Delete a user
     /// </summary>
     [HttpDelete("{id}")]

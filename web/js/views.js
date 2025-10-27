@@ -162,7 +162,7 @@ const Views = {
      */
     auth() {
         return `
-            <div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);">
+            <div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #2C3E50 0%, #5D6D7E 50%, #8D8741 100%);">
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-md-8 col-lg-6">
@@ -288,17 +288,17 @@ const Views = {
                 </div>
                 
                 <!-- Main Content -->
-                <div class="main-content flex-grow-1" style="background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);">
+                <div class="main-content flex-grow-1" style="background: linear-gradient(135deg, #2C3E50 0%, #5D6D7E 50%, #8D8741 100%);">
                     <!-- Top Navigation -->
-                    <nav class="navbar navbar-expand-lg navbar-light border-bottom" style="background: rgba(69, 26, 3, 0.8); backdrop-filter: blur(20px); border-color: #d97706 !important;">
+                    <nav class="navbar navbar-expand-lg navbar-light border-bottom" style="background: rgba(44, 62, 80, 0.8); backdrop-filter: blur(20px); border-color: #659DBD !important;">
                         <div class="container-fluid">
-                            <button class="btn btn-outline-secondary d-lg-none me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" style="border-color: #d97706; color: #d97706;">
+                            <button class="btn btn-outline-secondary d-lg-none me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" style="border-color: #659DBD; color: #659DBD;">
                                 Menu
                             </button>
-                            <span class="navbar-brand mb-0 h1" id="pageTitle" style="color: #fef3c7;">Dashboard</span>
+                            <span class="navbar-brand mb-0 h1" id="pageTitle" style="color: #FBEEC1;">Dashboard</span>
                             
                             <div class="dropdown">
-                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-color: #d97706; color: #fef3c7; background: rgba(217, 119, 6, 0.2);">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-color: #659DBD; color: #FBEEC1; background: rgba(101, 157, 189, 0.2);">
                                     ${userName}
                                 </button>
                                 <ul class="dropdown-menu">
@@ -745,6 +745,40 @@ const Views = {
                             </div>
                         </div>
                         
+                        <!-- Group Memberships Card -->
+                        <div class="card mb-4" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px 20px 0 0;">
+                                <h4 class="mb-0" style="color: #fef3c7;"><i class="fas fa-users me-2"></i>Group Memberships</h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <div id="userGroupsList">
+                                    <div class="text-center py-3">
+                                        <div class="spinner-border text-primary" role="status" style="color: #d97706 !important;">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 mb-0" style="color: #a16207;">Loading your groups...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Group Memberships Card -->
+                        <div class="card mb-4" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px 15px 0 0;">
+                                <h5 class="mb-0" style="color: #fef3c7;"><i class="fas fa-users me-2"></i>Group Memberships</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="dashboardUserGroupsList">
+                                    <div class="text-center py-3">
+                                        <div class="spinner-border text-primary" role="status" style="color: #d97706 !important;">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 mb-0" style="color: #a16207;">Loading your groups...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Account Settings Card -->
                         <div class="card" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
                             <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px 15px 0 0;">
@@ -790,7 +824,7 @@ const Views = {
      */
     profilePage() {
         return `
-            <div class="min-vh-100" style="background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);">
+            <div class="min-vh-100" style="background: linear-gradient(135deg, #2C3E50 0%, #5D6D7E 50%, #8D8741 100%);">
                 <!-- Navigation Bar -->
                 <nav class="navbar navbar-expand-lg" style="background: rgba(69, 26, 3, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid #d97706;">
                     <div class="container-fluid">
@@ -809,7 +843,7 @@ const Views = {
                                 <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                             </button>
                             <div class="dropdown">
-                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-color: #d97706; color: #fef3c7; background: rgba(217, 119, 6, 0.2);">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-color: #659DBD; color: #FBEEC1; background: rgba(101, 157, 189, 0.2);">
                                     <i class="fas fa-user me-1"></i>Account
                                 </button>
                                 <ul class="dropdown-menu">
@@ -965,7 +999,201 @@ const Views = {
                 </div>
             </div>
         `;
-    }
+    },
+
+    /**
+     * Render chats view
+     */
+    chats() {
+        return `
+            <div class="container-fluid py-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0" style="color: #fef3c7;">
+                                <i class="fas fa-comments me-2"></i>Chats
+                            </h2>
+                            <button class="btn btn-primary" onclick="showCreateChatModal()" 
+                                    style="background: #d97706; border-color: #d97706;">
+                                <i class="fas fa-plus me-2"></i>Create Chat
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Group Chats -->
+                            <div class="col-md-6">
+                                <div class="card" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px 20px 0 0;">
+                                        <h4 class="mb-0" style="color: #fef3c7;">
+                                            <i class="fas fa-users me-2"></i>Group Chats
+                                        </h4>
+                                    </div>
+                                    <div class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
+                                        <div id="chatsList">
+                                            <div class="text-center py-5">
+                                                <div class="spinner-border text-primary" role="status" style="color: #d97706 !important;">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <p class="mt-3 mb-0" style="color: #a16207;">Loading group chats...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Private Chats -->
+                            <div class="col-md-6">
+                                <div class="card" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px 20px 0 0;">
+                                        <h4 class="mb-0" style="color: #fef3c7;">
+                                            <i class="fas fa-lock me-2"></i>Private Chats
+                                        </h4>
+                                    </div>
+                                    <div class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
+                                        <div id="privateChatsList">
+                                            <div class="text-center py-5">
+                                                <div class="spinner-border text-primary" role="status" style="color: #d97706 !important;">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <p class="mt-3 mb-0" style="color: #a16207;">Loading private chats...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Create Chat Modal -->
+            <div class="modal fade" id="createChatModal" tabindex="-1" aria-labelledby="createChatModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="background: rgba(69, 26, 3, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <h5 class="modal-title" id="createChatModalLabel" style="color: #fef3c7;">
+                                <i class="fas fa-plus me-2"></i>Create Private Chat
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p style="color: #a16207;">Select a paired user to start a private conversation:</p>
+                            <div id="pairedUsersList">
+                                <div class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status" style="color: #d97706 !important;">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 mb-0" style="color: #a16207;">Loading paired users...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #6b7280; border-color: #6b7280;">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Render pairing view
+     */
+    pairing() {
+        return `
+            <div class="container-fluid py-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0" style="color: #fef3c7;">
+                                <i class="fas fa-users me-2"></i>Pairing
+                            </h2>
+                        </div>
+                        
+                        <!-- Pairing Tabs -->
+                        <ul class="nav nav-tabs mb-4" style="border-color: #d97706;">
+                            <li class="nav-item">
+                                <button class="nav-link active" id="myPairingsTab" data-bs-toggle="tab" data-bs-target="#myPairings" 
+                                        style="color: #fef3c7; border-color: #d97706; background: rgba(217, 119, 6, 0.2);">
+                                    <i class="fas fa-heart me-2"></i>My Pairings
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" id="findPairingTab" data-bs-toggle="tab" data-bs-target="#findPairing" 
+                                        style="color: #fef3c7; border-color: #d97706;">
+                                    <i class="fas fa-search me-2"></i>Find Pairing
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <!-- Tab Content -->
+                        <div class="tab-content">
+                            <!-- My Pairings Tab -->
+                            <div class="tab-pane fade show active" id="myPairings">
+                                <div class="card" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px 20px 0 0;">
+                                        <h4 class="mb-0" style="color: #fef3c7;">
+                                            <i class="fas fa-heart me-2"></i>Current Pairings
+                                        </h4>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <div id="pairingsList">
+                                            <div class="text-center py-5">
+                                                <div class="spinner-border text-primary" role="status" style="color: #d97706 !important;">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <p class="mt-3 mb-0" style="color: #a16207;">Loading your pairings...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Find Pairing Tab -->
+                            <div class="tab-pane fade" id="findPairing">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="card mb-4" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px 20px 0 0;">
+                                                <h5 class="mb-0" style="color: #fef3c7;">
+                                                    <i class="fas fa-filter me-2"></i>Filter by Group
+                                                </h5>
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <select class="form-select form-select-lg" id="pairingGroupFilter" 
+                                                        style="background: rgba(255, 255, 255, 0.1); border-color: #d97706; color: #fef3c7;">
+                                                    <option value="">Select a group...</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-8">
+                                        <div class="card" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <div class="card-header" style="background: rgba(69, 26, 3, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px 20px 0 0;">
+                                                <h5 class="mb-0" style="color: #fef3c7;">
+                                                    <i class="fas fa-users me-2"></i>Available Users
+                                                </h5>
+                                            </div>
+                                            <div class="card-body p-4">
+                                                <div id="availableUsersList">
+                                                    <div class="text-center py-5">
+                                                        <i class="fas fa-users text-muted mb-3" style="font-size: 3rem; color: #a16207 !important;"></i>
+                                                        <p class="mb-0" style="color: #a16207;">Select a group to see available users for pairing</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
 };
 
 // Make Views globally available

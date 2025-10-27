@@ -24,6 +24,11 @@ const API = {
       if (!res.ok) throw new Error(await res.text());
       return res.json();
     },
+    async getGroups(userId) {
+      const res = await fetch(`${API_BASE}/Users/${userId}/groups`);
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    },
   },
   symptoms: {
     async list() {
@@ -51,8 +56,9 @@ const API = {
     },
   },
     groups: {
-        async list() {
-            const res = await fetch(`${API_BASE}/Groups`);
+        async list(userId = null) {
+            const url = userId ? `${API_BASE}/Groups?userId=${userId}` : `${API_BASE}/Groups`;
+            const res = await fetch(url);
             if (!res.ok) throw new Error(await res.text());
             return res.json();
         },
@@ -65,18 +71,20 @@ const API = {
             if (!res.ok) throw new Error(await res.text());
             return res.json();
         },
-        async join(groupId) {
+        async join(groupId, userId) {
             const res = await fetch(`${API_BASE}/Groups/${groupId}/join`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ UserId: userId })
             });
             if (!res.ok) throw new Error(await res.text());
             return res.json();
         },
-        async leave(groupId) {
+        async leave(groupId, userId) {
             const res = await fetch(`${API_BASE}/Groups/${groupId}/leave`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ UserId: userId })
             });
             if (!res.ok) throw new Error(await res.text());
             return res.json();
@@ -89,26 +97,96 @@ const API = {
     },
     
     messages: {
-        async getGroupMessages(groupId) {
-            const res = await fetch(`${API_BASE}/Messages/group/${groupId}`);
+        async getGroupMessages(groupId, userId) {
+            const url = userId ? `${API_BASE}/Messages/group/${groupId}?userId=${userId}` : `${API_BASE}/Messages/group/${groupId}`;
+            const res = await fetch(url);
             if (!res.ok) throw new Error(await res.text());
             return res.json();
         },
-        async sendGroupMessage(groupId, messageText) {
+        async sendGroupMessage(groupId, messageText, userId) {
             const res = await fetch(`${API_BASE}/Messages/group/${groupId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messageText }),
+                body: JSON.stringify({ messageText, userId }),
             });
             if (!res.ok) throw new Error(await res.text());
             return res.json();
         },
-        async getMyGroups() {
-            const res = await fetch(`${API_BASE}/Messages/my-groups`);
+        async getMyGroups(userId) {
+            const url = userId ? `${API_BASE}/Messages/my-groups?userId=${userId}` : `${API_BASE}/Messages/my-groups`;
+            const res = await fetch(url);
             if (!res.ok) throw new Error(await res.text());
             return res.json();
         },
     },
+    
+    pairings: {
+        async getMyPairings(userId) {
+            const url = userId ? `${API_BASE}/Pairing/my-pairings?userId=${userId}` : `${API_BASE}/Pairing/my-pairings`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        },
+        async getAvailableUsers(groupId, userId) {
+            const url = userId ? `${API_BASE}/Pairing/available/${groupId}?userId=${userId}` : `${API_BASE}/Pairing/available/${groupId}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        },
+        async createPairing(groupId, targetUserId, userId) {
+            const res = await fetch(`${API_BASE}/Pairing/create`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ groupId, targetUserId, userId }),
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        },
+        async removePairing(pairingId, userId) {
+            const url = userId ? `${API_BASE}/Pairing/${pairingId}?userId=${userId}` : `${API_BASE}/Pairing/${pairingId}`;
+            const res = await fetch(url, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        },
+    },
+    
+    privateMessages: {
+        async getConversations(userId) {
+            const url = userId ? `${API_BASE}/PrivateMessages/conversations?userId=${userId}` : `${API_BASE}/PrivateMessages/conversations`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        },
+        async getConversation(partnerId, userId) {
+            const url = userId ? `${API_BASE}/PrivateMessages/conversation/${partnerId}?userId=${userId}` : `${API_BASE}/PrivateMessages/conversation/${partnerId}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        },
+        async sendMessage(receiverId, messageText, senderId) {
+            const res = await fetch(`${API_BASE}/PrivateMessages/send`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ receiverId, messageText, senderId }),
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        },
+        async markAsRead(messageId, userId) {
+            const url = userId ? `${API_BASE}/PrivateMessages/${messageId}/read?userId=${userId}` : `${API_BASE}/PrivateMessages/${messageId}/read`;
+            const res = await fetch(url, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        },
+    },
+    
+    
   auth: {
     /**
      * Login user with email and password
