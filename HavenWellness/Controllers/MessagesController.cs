@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HavenWellness.Data;
 using HavenWellness.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HavenWellness.Controllers;
 
 /// <summary>
-/// Controller for managing group messages
+/// Controller for managing group messages and chat functionality
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -20,31 +21,45 @@ public class MessagesController : ControllerBase
     }
 
     /// <summary>
-    /// Get all messages with pagination and optional group filter
+    /// Get all messages for a specific group
     /// </summary>
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GroupMessage>>> GetMessages(
-        [FromQuery] int page = 1, 
-        [FromQuery] int pageSize = 20,
-        [FromQuery] int? groupId = null)
+    /// <param name="groupId">The ID of the group</param>
+    /// <returns>List of messages for the group</returns>
+    [HttpGet("group/{groupId}")]
+    public async Task<ActionResult<IEnumerable<object>>> GetGroupMessages(int groupId)
     {
-        var query = _context.GroupMessages.AsQueryable();
-
-        if (groupId.HasValue)
+        // Check if group exists
+        var group = await _context.Groups.FindAsync(groupId);
+        if (group == null)
         {
-            query = query.Where(gm => gm.GroupId == groupId.Value);
+            return NotFound("Group not found");
         }
 
-        var messages = await query
-            .OrderByDescending(gm => gm.Timestamp)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(m => new {
-                m.Id,
-                m.MessageText,
-                m.Timestamp,
-                m.GroupId,
-                m.UserId
+        // For now, use a default user ID of 1 since we don't have authentication yet
+        // In a real app, you'd get this from the authenticated user's context
+        var userId = 1; // TODO: Get from authenticated user context
+
+        // Check if user is a member of the group
+        var isMember = await _context.UserGroups
+            .AnyAsync(ug => ug.UserId == userId && ug.GroupId == groupId);
+
+        if (!isMember)
+        {
+            return Forbid("You must be a member of this group to view messages");
+        }
+
+        var messages = await _context.GroupMessages
+            .Where(gm => gm.GroupId == groupId)
+            .Include(gm => gm.User)
+            .OrderBy(gm => gm.Timestamp)
+            .Select(gm => new
+            {
+                gm.Id,
+                gm.MessageText,
+                gm.Timestamp,
+                UserId = gm.UserId,
+                UserName = gm.User!.Name,
+                UserEmail = gm.User.Email
             })
             .ToListAsync();
 
@@ -52,156 +67,110 @@ public class MessagesController : ControllerBase
     }
 
     /// <summary>
-    /// Get a specific message by ID
+    /// Send a message to a group
     /// </summary>
-    [HttpGet("{id}")]
-    public async Task<ActionResult<GroupMessage>> GetMessage(int id)
+    /// <param name="groupId">The ID of the group</param>
+    /// <param name="request">The message request</param>
+    /// <returns>The created message</returns>
+    [HttpPost("group/{groupId}")]
+    public async Task<ActionResult<object>> SendGroupMessage(int groupId, [FromBody] SendMessageRequest request)
     {
-        var message = await _context.GroupMessages
-            .Include(gm => gm.User)
-            .Include(gm => gm.Group)
-            .FirstOrDefaultAsync(gm => gm.Id == id);
-
-        if (message == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(message);
-    }
-
-    /// <summary>
-    /// Create a new message
-    /// </summary>
-    /// <param name="message">The message object to create</param>
-    /// <returns>The created message with assigned ID and timestamp</returns>
-    /// <response code="201">Message created successfully</response>
-    /// <response code="400">Invalid message data or invalid GroupId/UserId</response>
-    /// <remarks>
-    /// Sample request:
-    /// 
-    ///     POST /api/messages
-    ///     {
-    ///         "groupId": 1,
-    ///         "userId": 1,
-    ///         "messageText": "Hello everyone! I'm new to this group and looking forward to connecting with others."
-    ///     }
-    /// 
-    /// Sample response:
-    /// 
-    ///     {
-    ///         "id": 1,
-    ///         "groupId": 1,
-    ///         "userId": 1,
-    ///         "messageText": "Hello everyone! I'm new to this group and looking forward to connecting with others.",
-    ///         "timestamp": "2024-01-15T10:30:00Z",
-    ///         "group": null,
-    ///         "user": null
-    ///     }
-    /// </remarks>
-    [HttpPost]
-    public async Task<IActionResult> CreateMessage([FromBody] GroupMessage message)
-    {
-        if (message == null)
-            return BadRequest("Message cannot be null.");
-
-        // Only assign valid fields
-        var newMessage = new GroupMessage
-        {
-            GroupId = message.GroupId,
-            UserId = message.UserId,
-            MessageText = message.MessageText,
-            Timestamp = DateTime.UtcNow
-        };
-
-        _context.GroupMessages.Add(newMessage);
-        await _context.SaveChangesAsync();
-
-        return Ok(new {
-            newMessage.Id,
-            newMessage.MessageText,
-            newMessage.Timestamp,
-            newMessage.GroupId,
-            newMessage.UserId
-        });
-    }
-
-    /// <summary>
-    /// Update an existing message
-    /// </summary>
-    /// <param name="id">The ID of the message to update</param>
-    /// <param name="message">The updated message data</param>
-    /// <returns>No content if successful</returns>
-    /// <response code="204">Message updated successfully</response>
-    /// <response code="400">Invalid message data or ID mismatch</response>
-    /// <response code="404">Message not found</response>
-    /// <remarks>
-    /// Sample request:
-    /// 
-    ///     PUT /api/messages/1
-    ///     {
-    ///         "id": 1,
-    ///         "groupId": 1,
-    ///         "userId": 1,
-    ///         "messageText": "Updated message content with corrections",
-    ///         "timestamp": "2024-01-15T10:30:00Z"
-    ///     }
-    /// 
-    /// Sample response:
-    /// 
-    ///     HTTP 204 No Content
-    /// </remarks>
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateMessage(int id, GroupMessage message)
-    {
-        if (id != message.Id)
-        {
-            return BadRequest();
-        }
-
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        _context.Entry(message).State = EntityState.Modified;
-
-        try
+        // Check if group exists
+        var group = await _context.Groups.FindAsync(groupId);
+        if (group == null)
         {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!MessageExists(id))
-            {
-                return NotFound();
-            }
-            throw;
+            return NotFound("Group not found");
         }
 
-        return NoContent();
+        // For now, use a default user ID of 1 since we don't have authentication yet
+        // In a real app, you'd get this from the authenticated user's context
+        var userId = 1; // TODO: Get from authenticated user context
+
+        // Check if user is a member of the group
+        var isMember = await _context.UserGroups
+            .AnyAsync(ug => ug.UserId == userId && ug.GroupId == groupId);
+
+        if (!isMember)
+        {
+            return Forbid("You must be a member of this group to send messages");
+        }
+
+        var message = new GroupMessage
+        {
+            GroupId = groupId,
+            UserId = userId,
+            MessageText = request.MessageText,
+            Timestamp = DateTime.UtcNow
+        };
+
+        _context.GroupMessages.Add(message);
+        await _context.SaveChangesAsync();
+
+        // Get the user information for the response
+        var user = await _context.Users.FindAsync(userId);
+
+        var response = new
+        {
+            message.Id,
+            message.MessageText,
+            message.Timestamp,
+            UserId = message.UserId,
+            UserName = user?.Name ?? "Unknown",
+            UserEmail = user?.Email ?? "unknown@example.com"
+        };
+
+        return CreatedAtAction(nameof(GetGroupMessages), new { groupId }, response);
     }
 
     /// <summary>
-    /// Delete a message
+    /// Get all groups that the current user is a member of (for chat list)
     /// </summary>
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteMessage(int id)
+    /// <returns>List of groups with recent message info</returns>
+    [HttpGet("my-groups")]
+    public async Task<ActionResult<IEnumerable<object>>> GetMyGroups()
     {
-        var message = await _context.GroupMessages.FindAsync(id);
-        if (message == null)
-        {
-            return NotFound();
-        }
+        // For now, use a default user ID of 1 since we don't have authentication yet
+        // In a real app, you'd get this from the authenticated user's context
+        var userId = 1; // TODO: Get from authenticated user context
 
-        _context.GroupMessages.Remove(message);
-        await _context.SaveChangesAsync();
+        var groups = await _context.UserGroups
+            .Where(ug => ug.UserId == userId)
+            .Include(ug => ug.Group)
+            .ThenInclude(g => g.GroupMessages.OrderByDescending(gm => gm.Timestamp).Take(1))
+            .Select(ug => new
+            {
+                GroupId = ug.GroupId,
+                GroupName = ug.Group!.GroupName,
+                GroupDescription = ug.Group.Description,
+                UserRole = ug.Role,
+                MemberCount = ug.Group.UserGroups.Count,
+                LastMessage = ug.Group.GroupMessages
+                    .OrderByDescending(gm => gm.Timestamp)
+                    .Select(gm => new
+                    {
+                        gm.MessageText,
+                        gm.Timestamp,
+                        UserName = gm.User!.Name
+                    })
+                    .FirstOrDefault()
+            })
+            .ToListAsync();
 
-        return NoContent();
+        return Ok(groups);
     }
+}
 
-    private bool MessageExists(int id)
-    {
-        return _context.GroupMessages.Any(e => e.Id == id);
-    }
+/// <summary>
+/// Request model for sending a message
+/// </summary>
+public class SendMessageRequest
+{
+    [Required]
+    [StringLength(1000, MinimumLength = 1)]
+    public string MessageText { get; set; } = string.Empty;
 }

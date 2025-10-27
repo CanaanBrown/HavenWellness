@@ -5,10 +5,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard - Haven Wellness</title>
   <style>
-    body { margin: 0; display: flex; font-family: system-ui, sans-serif; }
-    #sidebar a { color: #c9d3ff; text-decoration: none; }
-    #sidebar a:hover { color: #fff; }
-    main { margin-left: 240px; padding: 24px; width: 100%; }
+    body { 
+      margin: 0; 
+      display: flex; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8f9fa;
+    }
+    #sidebar a { color: #6c757d; text-decoration: none; }
+    #sidebar a:hover { color: #495057; }
+    main { 
+      margin-left: 240px; 
+      padding: 32px; 
+      width: 100%; 
+      max-width: 1200px;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #212529;
+      margin-bottom: 1.5rem;
+    }
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 1rem;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+    }
+    .row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .row .card {
+      flex: 1;
+      min-width: 280px;
+      margin-bottom: 0;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    input, textarea, select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    pre {
+      background: #f8f9fa;
+      color: #495057;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid #e9ecef;
+      font-size: 0.85rem;
+      overflow: auto;
+      margin-top: 1rem;
+    }
+    .chat-container {
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      background: white;
+    }
+    .chat-messages {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    .chat-input-container {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem;
+      border-top: 1px solid #e9ecef;
+    }
+    .chat-input {
+      flex: 1;
+      resize: none;
+      min-height: 40px;
+      max-height: 120px;
+    }
   </style>
 </head>
 <body>

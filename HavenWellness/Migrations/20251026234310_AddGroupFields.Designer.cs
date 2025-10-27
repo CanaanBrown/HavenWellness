@@ -3,6 +3,7 @@ using System;
 using HavenWellness.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HavenWellness.Migrations
 {
     [DbContext(typeof(WellnessContext))]
-    partial class WellnessContextModelSnapshot : ModelSnapshot
+    [Migration("20251026234310_AddGroupFields")]
+    partial class AddGroupFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -55,7 +58,7 @@ namespace HavenWellness.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 10, 27, 1, 10, 57, 0, DateTimeKind.Utc).AddTicks(5521),
+                            CreatedDate = new DateTime(2025, 10, 26, 23, 43, 9, 424, DateTimeKind.Utc).AddTicks(6503),
                             Description = "A supportive community for students managing chronic health conditions",
                             GroupName = "Chronic Illness Support",
                             IsPrivate = false
@@ -256,14 +259,6 @@ namespace HavenWellness.Migrations
                     b.Property<int>("GroupId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("JoinedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
@@ -283,8 +278,6 @@ namespace HavenWellness.Migrations
                         {
                             Id = 1,
                             GroupId = 1,
-                            JoinedDate = new DateTime(2025, 10, 27, 1, 10, 57, 0, DateTimeKind.Utc).AddTicks(5598),
-                            Role = "Member",
                             UserId = 1
                         });
                 });

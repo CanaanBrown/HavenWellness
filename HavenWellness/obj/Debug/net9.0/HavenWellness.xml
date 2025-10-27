@@ -30,33 +30,14 @@
             Get a specific group by ID
             </summary>
         </member>
-        <member name="M:HavenWellness.Controllers.GroupsController.CreateGroup(HavenWellness.Models.Group)">
+        <member name="M:HavenWellness.Controllers.GroupsController.CreateGroup(HavenWellness.Controllers.CreateGroupRequest)">
             <summary>
             Create a new group
             </summary>
-            <param name="group">The group object to create</param>
+            <param name="request">The group creation request</param>
             <returns>The created group with assigned ID</returns>
             <response code="201">Group created successfully</response>
             <response code="400">Invalid group data</response>
-            <remarks>
-            Sample request:
-            
-                POST /api/groups
-                {
-                    "groupName": "Chronic Pain Support Group",
-                    "description": "A supportive community for people managing chronic pain conditions"
-                }
-            
-            Sample response:
-            
-                {
-                    "id": 1,
-                    "groupName": "Chronic Pain Support Group",
-                    "description": "A supportive community for people managing chronic pain conditions",
-                    "userGroups": [],
-                    "groupMessages": []
-                }
-            </remarks>
         </member>
         <member name="M:HavenWellness.Controllers.GroupsController.UpdateGroup(System.Int32,HavenWellness.Models.Group)">
             <summary>
@@ -83,87 +64,66 @@
                 HTTP 204 No Content
             </remarks>
         </member>
+        <member name="M:HavenWellness.Controllers.GroupsController.JoinGroup(System.Int32)">
+            <summary>
+            Join a group
+            </summary>
+            <param name="groupId">The ID of the group to join</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:HavenWellness.Controllers.GroupsController.LeaveGroup(System.Int32)">
+            <summary>
+            Leave a group
+            </summary>
+            <param name="groupId">The ID of the group to leave</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:HavenWellness.Controllers.GroupsController.GetGroupMembers(System.Int32)">
+            <summary>
+            Get group members
+            </summary>
+            <param name="groupId">The ID of the group</param>
+            <returns>List of group members</returns>
+        </member>
         <member name="M:HavenWellness.Controllers.GroupsController.DeleteGroup(System.Int32)">
             <summary>
             Delete a group
             </summary>
         </member>
+        <member name="T:HavenWellness.Controllers.CreateGroupRequest">
+            <summary>
+            Request model for creating a new group
+            </summary>
+        </member>
         <member name="T:HavenWellness.Controllers.MessagesController">
             <summary>
-            Controller for managing group messages
+            Controller for managing group messages and chat functionality
             </summary>
         </member>
-        <member name="M:HavenWellness.Controllers.MessagesController.GetMessages(System.Int32,System.Int32,System.Nullable{System.Int32})">
+        <member name="M:HavenWellness.Controllers.MessagesController.GetGroupMessages(System.Int32)">
             <summary>
-            Get all messages with pagination and optional group filter
+            Get all messages for a specific group
             </summary>
+            <param name="groupId">The ID of the group</param>
+            <returns>List of messages for the group</returns>
         </member>
-        <member name="M:HavenWellness.Controllers.MessagesController.GetMessage(System.Int32)">
+        <member name="M:HavenWellness.Controllers.MessagesController.SendGroupMessage(System.Int32,HavenWellness.Controllers.SendMessageRequest)">
             <summary>
-            Get a specific message by ID
+            Send a message to a group
             </summary>
+            <param name="groupId">The ID of the group</param>
+            <param name="request">The message request</param>
+            <returns>The created message</returns>
         </member>
-        <member name="M:HavenWellness.Controllers.MessagesController.CreateMessage(HavenWellness.Models.GroupMessage)">
+        <member name="M:HavenWellness.Controllers.MessagesController.GetMyGroups">
             <summary>
-            Create a new message
+            Get all groups that the current user is a member of (for chat list)
             </summary>
-            <param name="message">The message object to create</param>
-            <returns>The created message with assigned ID and timestamp</returns>
-            <response code="201">Message created successfully</response>
-            <response code="400">Invalid message data or invalid GroupId/UserId</response>
-            <remarks>
-            Sample request:
-            
-                POST /api/messages
-                {
-                    "groupId": 1,
-                    "userId": 1,
-                    "messageText": "Hello everyone! I'm new to this group and looking forward to connecting with others."
-                }
-            
-            Sample response:
-            
-                {
-                    "id": 1,
-                    "groupId": 1,
-                    "userId": 1,
-                    "messageText": "Hello everyone! I'm new to this group and looking forward to connecting with others.",
-                    "timestamp": "2024-01-15T10:30:00Z",
-                    "group": null,
-                    "user": null
-                }
-            </remarks>
+            <returns>List of groups with recent message info</returns>
         </member>
-        <member name="M:HavenWellness.Controllers.MessagesController.UpdateMessage(System.Int32,HavenWellness.Models.GroupMessage)">
+        <member name="T:HavenWellness.Controllers.SendMessageRequest">
             <summary>
-            Update an existing message
-            </summary>
-            <param name="id">The ID of the message to update</param>
-            <param name="message">The updated message data</param>
-            <returns>No content if successful</returns>
-            <response code="204">Message updated successfully</response>
-            <response code="400">Invalid message data or ID mismatch</response>
-            <response code="404">Message not found</response>
-            <remarks>
-            Sample request:
-            
-                PUT /api/messages/1
-                {
-                    "id": 1,
-                    "groupId": 1,
-                    "userId": 1,
-                    "messageText": "Updated message content with corrections",
-                    "timestamp": "2024-01-15T10:30:00Z"
-                }
-            
-            Sample response:
-            
-                HTTP 204 No Content
-            </remarks>
-        </member>
-        <member name="M:HavenWellness.Controllers.MessagesController.DeleteMessage(System.Int32)">
-            <summary>
-            Delete a message
+            Request model for sending a message
             </summary>
         </member>
         <member name="T:HavenWellness.Controllers.SymptomsController">
@@ -401,6 +361,30 @@
             <inheritdoc />
         </member>
         <member name="M:HavenWellness.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:HavenWellness.Migrations.AddGroupFields">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddGroupFields.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddGroupFields.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddGroupFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:HavenWellness.Migrations.AddUserGroupRoleAndJoinedDate">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddUserGroupRoleAndJoinedDate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddUserGroupRoleAndJoinedDate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:HavenWellness.Migrations.AddUserGroupRoleAndJoinedDate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:HavenWellness.Models.Group">
